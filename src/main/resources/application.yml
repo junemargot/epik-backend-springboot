@@ -70,5 +70,5 @@ server:
   port: 8081
 
 file:
-  tmp-dir: uploads\temp
-  upload-dir: uploads\images
+  tmp-dir: uploads/temp
+  upload-dir: uploads/images

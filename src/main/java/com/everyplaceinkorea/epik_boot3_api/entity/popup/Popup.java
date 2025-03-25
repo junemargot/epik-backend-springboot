@@ -24,6 +24,7 @@ public class Popup {
     @Column(nullable = false)
     private String title;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
     private String address;
 
