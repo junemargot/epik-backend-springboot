@@ -468,3 +468,12 @@ Caused by: org.h2.jdbc.JdbcSQLNonTransientConnectionException: The connection wa
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:690)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
 	... 90 more
+2025-03-26 14:38:29.562888+09:00 jdbc[53]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "CONTENT CHARACTER VARYING(255)": "U&'<h3>\\acf5\\c9c0\\c0ac\\d56d</h3><p>\\203b \\c608\\b9e4\\c790\\b294 \\bcf8 \\c548\\b0b4 \\... (2776)"; SQL statement:
+insert into concert (address,age_restriction,content,end_date,file_path,file_saved_name,member_id,region_id,running_time,start_date,status,title,venue,view_count,write_date,youtube_url,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,localtimestamp,?,default) [22001-224]
+2025-03-26 14:40:11.603324+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "CONTENT CHARACTER VARYING(255)": "U&'<h3>\\acf5\\c9c0\\c0ac\\d56d</h3><p>\\203b \\c608\\b9e4\\c790\\b294 \\bcf8 \\c548\\b0b4 \\... (2776)"; SQL statement:
+insert into concert (address,age_restriction,content,end_date,file_path,file_saved_name,member_id,region_id,running_time,start_date,status,title,venue,view_count,write_date,youtube_url,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,localtimestamp,?,default) [22001-224]
+2025-03-26 14:44:49.724831+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "CONTENT CHARACTER VARYING(255)": "U&'<h3>\\acf5\\c5f0\\c2dc\\ac04 \\c815\\bcf4</h3><p>\\c608\\b9e4\\ac00\\b2a5\\c2dc\\ac04: \\c... (1976)"; SQL statement:
+insert into concert (address,age_restriction,content,end_date,file_path,file_saved_name,member_id,region_id,running_time,start_date,status,title,venue,view_count,write_date,youtube_url,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,localtimestamp,?,default) [22001-224]

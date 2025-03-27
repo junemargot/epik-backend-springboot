@@ -67,6 +67,7 @@ public class DefaultPopupService implements PopupService {
 
         // dto -> entity
         Popup popup = modelMapper.map(popupRequestDto, Popup.class);
+        popup.setViewCount(0);
         popup.addMember(member); // entity 담아주기
         popup.addPopupCategory(popupCategory);
         popup.addPopupRegion(popupRegion);
@@ -129,38 +130,6 @@ public class DefaultPopupService implements PopupService {
             }
         }
 
-        // fileNames에서 뽑아서 업로드 폴더로 옮겨주기
-//        String[] fileNames = popupRequestDto.getFileNames();
-//        for (String fileName : fileNames) {
-//            log.info("#fileName: {}", fileName);
-//            // ### 현재 임시폴더에 있는 이미지 의 경로생성하기 ###
-//            // C:\Users\yunkk\Desktop\epik-full\epik\backend\src\main\webapp\image\tmp\musical
-//            Path folderPath = Paths.get(System.getProperty("user.dir") + File.separator + tmpPath + File.separator + UploadFolderType.POPUP.getFolderName());
-//            log.info("folderPath ={} ",folderPath);
-//            // C:\Users\yunkk\Desktop\epik-full\epik\backend\src\main\webapp\image\tmp\musical\fe0e5a9fc11a45f4aa3b73ae2a9f0816.jpg
-//            String fullPath = System.getProperty("user.dir") + File.separator + tmpPath + File.separator + UploadFolderType.POPUP.getFolderName() + File.separator + fileName;
-//            log.info("fullPath ={} ",fullPath);
-//            Path sourcePath = Paths.get(fullPath);
-//            log.info("sourcePath ={} ",sourcePath);
-//
-//            Path targetpath = Paths.get(System.getProperty("user.dir") + File.separator + uploadPath + File.separator + UploadFolderType.POPUP.getFolderName() + File.separator + fileName);
-//            log.info("targetpath ={} ",targetpath);
-//
-//            if (Files.exists(sourcePath)) {
-//                log.info("파일명 : {}이 임시폴더에 존재합니다.", fileName);
-//                // 존재한다면? webapp/image/uplods/musical 로 옮기기
-//                // 일단 폴더가 존재하는지 확인하고
-//                if (!Files.exists(folderPath)) {
-//                    Files.createDirectories(folderPath); // 상위 폴더까지 모두 생성
-//                }
-//                // 이동할 파일의 현재 경로(sourceDir), 이동 후의 파일 경로 설정(targetDir)
-////                Files.move(sourcePath, targetpath);
-//            }
-//
-//        }
-//
-//        log.info("저장된 팝업 식별 번호 ={}", savedPopup.getId());
-
         return savedPopup.getId();
     }
 
@@ -183,9 +152,11 @@ public class DefaultPopupService implements PopupService {
     }
 
     //팝업 상세조회
+    @Transactional
     @Override
     public PopupResponseDto getPopup(Long id) {
         Popup popup = popupRepository.findById(id).orElseThrow();
+        popup.setViewCount(popup.getViewCount() + 1);
         log.info("popup = {}", popup);
         //태그
         List<PopupTag> allByPopupTag = popupTagRepository.findAllByPopupId(popup.getId());

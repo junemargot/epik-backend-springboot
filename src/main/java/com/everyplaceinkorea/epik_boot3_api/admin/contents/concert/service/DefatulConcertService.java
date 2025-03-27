@@ -121,10 +121,13 @@ public class DefatulConcertService implements ConcertService {
 
   }
 
+  @Transactional
   @Override
   public ConcertResponseDto getById(Long id) {
     Concert concert = concertRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("CONCERT NOT FOUND WITH ID: " + id));
+
+    concert.setViewCount(concert.getViewCount() + 1);
 
     List<ConcertTicketOffice> concertTicket = concertTicketOfficeRepository.findAllByConcertId(id);
     List<ConcertTicketPrice> concertPrice = concertTicketPriceRepository.findAllByConcertId(id);
@@ -166,7 +169,6 @@ public class DefatulConcertService implements ConcertService {
     // 인증이 안되니깐 일단 임시로 데이터 넣어놓기
     concertRequestDto.setWriter(1L);
     concertRequestDto.setRegion(1L);
-    //
 
     ConcertUploadResultDto uploadResult = uploadFile(files);
     if(uploadResult == null || uploadResult.getFilePath() == null) {
@@ -178,6 +180,7 @@ public class DefatulConcertService implements ConcertService {
 
     Concert concert = modelMapper.map(concertRequestDto, Concert.class);
 
+    concert.setViewCount(0);
     concert.setMember(member);
     concert.setRegion(region);
     concert.addImage(uploadResult);
