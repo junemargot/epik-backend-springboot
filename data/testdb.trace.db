@@ -477,3 +477,17 @@ insert into concert (address,age_restriction,content,end_date,file_path,file_sav
 2025-03-26 14:44:49.724831+09:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLDataException: Value too long for column "CONTENT CHARACTER VARYING(255)": "U&'<h3>\\acf5\\c5f0\\c2dc\\ac04 \\c815\\bcf4</h3><p>\\c608\\b9e4\\ac00\\b2a5\\c2dc\\ac04: \\c... (1976)"; SQL statement:
 insert into concert (address,age_restriction,content,end_date,file_path,file_saved_name,member_id,region_id,running_time,start_date,status,title,venue,view_count,write_date,youtube_url,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,localtimestamp,?,default) [22001-224]
+2025-03-27 21:31:07.758175+09:00 jdbc[184]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "CONTENT CHARACTER VARYING(255)": "U&'<p>\\d654, \\baa9, \\ae08 8\\c2dc\\ff5c\\c218 4\\c2dc, 8\\c2dc\\ff5c\\d1a0 3\\c2dc, 7\\c2... (1283)"; SQL statement:
+insert into musical (address,age_restriction,content,end_date,file_saved_name,member_id,region_id,running_time,start_date,status,title,venue,view_count,write_date,id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,default) [22001-224]
+2025-03-27 23:39:04.768173+09:00 jdbc[23]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "EXHIBITION" not found; SQL statement:
+ALTER TABLE exhibition ALTER COLUMN content TEXT [42102-224]
+2025-03-28 01:07:09.682877+09:00 jdbc[44]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "EXHIBITIOIN" not found; SQL statement:
+select * from exhibitioin [42102-224]
+2025-03-28 14:46:33.515017+09:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "select * from popup\000d\000a\000d\000a[*]select * from popup_image"; SQL statement:
+select * from popup
+
+select * from popup_image [42000-224]

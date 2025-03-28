@@ -37,7 +37,7 @@ public class ExhibitionController {
 
     // ConcertService에서 검색 및 페이징 데이터를 가져옴
     ExhibitionListDto exhibitions = exhibitionService.getList(page, keyword, searchType);
-
+    System.out.println("전시회 목록: " + exhibitions);
     // 가져온 데이터를 ResponseEntity로 반환
     return ResponseEntity.ok().body(exhibitions);
   }

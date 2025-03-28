@@ -51,22 +51,6 @@ public class DefatulConcertService implements ConcertService {
   @Value("${file.upload-dir}")
   private String uploadPath;
 
-//  @Override
-//  public ConcertListDto getList() {
-//    // 게시물 목록 ID 내림차순으로 정렬
-//    List<Concert> concerts = concertRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-//
-//    long totalCount = concertRepository.count();
-//    List<ConcertDto> concertDtos = concerts.stream().map(concert -> {
-//      ConcertDto concertDto = modelMapper.map(concert, ConcertDto.class);
-//      concertDto.setWriter(concert.getMember().getNickname());
-//
-//      return concertDto;
-//    }).collect(Collectors.toList());
-//
-//    return new ConcertListDto(concertDtos, totalCount);
-//  }
-
   @Override
   public ConcertListDto getList(int page, String keyword, String searchType) {
     // 기본 페이지 번호 설정 - 클라이언트는 1-based 페이지 인덱스를 사용하므로 Spring JPA의 0-based 인덱스에 맞게 변환
@@ -82,9 +66,6 @@ public class DefatulConcertService implements ConcertService {
     Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
     // 검색 조건에 맞는 데이터 가져오기
-    System.out.println("SearchType: " + searchType);
-    System.out.println("Keyword: " + keyword);
-    System.out.println("Pageable: " + pageable);
     Page<Concert> concertPage = concertRepository.searchConcert(searchType, keyword, pageable);
 
     long totalCount = concertPage.getTotalElements(); // 총 게시물 수
@@ -298,53 +279,6 @@ public class DefatulConcertService implements ConcertService {
       return null; // 추후 빈파일이 넘어왔을 경우 예외 처리 필요
     }
   }
-
-
-//  // 이미지 업로드 경로 설정
-//  private String makeFolder() {
-//    Path location = Paths.get(System.getProperty("user.dir"), "uploads", "concert");
-//    String str = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-//    String folderPath = str.replace("/", File.separator);
-//    System.out.println("folderPath: " + folderPath);
-//
-//    File uploadPathFolder = new File(String.valueOf(location), folderPath);
-//    System.out.println("업로드 경로:" + uploadPathFolder.toPath());
-//
-//    if(!uploadPathFolder.exists()) {
-//      uploadPathFolder.mkdirs();
-//    }
-//
-//    return uploadPathFolder.toPath().toString();
-//  }
-
-  // TicketPricesDto -> Entity List로 반환
-//  private List<ConcertTicketPrice> saveTicketPrices(List<ConcertTicketPriceDto> ticketPrices, Concert concert) {
-//    List<ConcertTicketPrice> ticketPriceEntities = new ArrayList<>();
-//
-//    for(ConcertTicketPriceDto ticketPriceDto : ticketPrices) {
-//      ConcertTicketPrice ticketPrice = modelMapper.map(ticketPriceDto, ConcertTicketPrice.class);
-//      ticketPrice.setConcert(concert);
-//
-//      ticketPriceEntities.add(ticketPrice);
-//    }
-//
-//    return ticketPriceEntities;
-//  }
-
-
-//  private List<ConcertTicketOffice> saveTicketOffices(List<ConcertTicketOfficeDto> ticketOffices, Concert concert) {
-//
-//    List<ConcertTicketOffice> ticketOfficeEntities = new ArrayList<>();
-//
-//    for(ConcertTicketOfficeDto ticketOfficeDto : ticketOffices) {
-//      ConcertTicketOffice ticketOffice = modelMapper.map(ticketOfficeDto, ConcertTicketOffice.class);
-//
-//      ticketOffice.setConcert(concert);
-//      ticketOfficeEntities.add(ticketOffice);
-//    }
-//
-//    return ticketOfficeEntities;
-//  }
 
   private List<ConcertTicketOffice> saveTicketOffices(List<ConcertTicketOfficeDto> ticketOffices, Concert savedConcert) {
     if(ticketOffices == null) {

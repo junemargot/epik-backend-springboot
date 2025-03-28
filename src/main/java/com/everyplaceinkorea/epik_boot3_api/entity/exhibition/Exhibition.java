@@ -1,5 +1,7 @@
 package com.everyplaceinkorea.epik_boot3_api.entity.exhibition;
 
+import com.everyplaceinkorea.epik_boot3_api.admin.contents.concert.dto.ConcertUploadResultDto;
+import com.everyplaceinkorea.epik_boot3_api.admin.contents.exhibition.dto.ExhibitionUploadResultDto;
 import com.everyplaceinkorea.epik_boot3_api.entity.Region;
 import com.everyplaceinkorea.epik_boot3_api.entity.member.Member;
 import com.everyplaceinkorea.epik_boot3_api.entity.musical.Status;
@@ -15,7 +17,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "concert")
+@Table(name = "exhibition")
 public class Exhibition {
 
   @Id
@@ -26,7 +28,7 @@ public class Exhibition {
   @Column(name = "title", nullable = false)
   private String title;
 
-  @Column(name = "content", nullable = false)
+  @Column(name = "content", nullable = false, columnDefinition = "TEXT")
   private String content;
 
   @Column(name = "address", nullable = false)
@@ -79,6 +81,10 @@ public class Exhibition {
   @JoinColumn(name = "region_id")
   private Region region;
 
+  public void addImage(ExhibitionUploadResultDto uploadResult) {
+    this.filePath = uploadResult.getFilePath();
+    this.fileSavedName = uploadResult.getFileSavedName();
+  }
 
 
 }

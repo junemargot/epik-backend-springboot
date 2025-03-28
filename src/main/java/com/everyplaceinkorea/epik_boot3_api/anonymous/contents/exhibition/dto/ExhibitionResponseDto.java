@@ -14,7 +14,7 @@ public class ExhibitionResponseDto {
     // 번호
     private Long id;
     // 대표이미지
-    private String fileSaveName;
+    private String fileSavedName;
     // 제목
     private String title;
     // 장소

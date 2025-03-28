@@ -1,5 +1,6 @@
 package com.everyplaceinkorea.epik_boot3_api.admin.contents.exhibition.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,8 +26,8 @@ public class ExhibitionRequestDto {  // 등록할 때 필요한 데이터
   private String youtubeUrl;       // 영상
   private String[] fileNames;      // 업로드한 파일명
 
-//  @JsonProperty("ticketPrices")
-  private List<ExhibitionTicketPriceDto> ticketPrices;    // 티켓 가격
-//  @JsonProperty("ticketOffices")
-  private List<ExhibitionTicketOfficeDto> ticketOffices;  // 티켓 판매처
+  @JsonProperty("ticketPrices")
+  private List<ExhibitionTicketPriceDto> exhibitionTicketPrices;    // 티켓 가격
+  @JsonProperty("ticketOffices")
+  private List<ExhibitionTicketOfficeDto> exhibitionTicketOffices;  // 티켓 판매처
 }
