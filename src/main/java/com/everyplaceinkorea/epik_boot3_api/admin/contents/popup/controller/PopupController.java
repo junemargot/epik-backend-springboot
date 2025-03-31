@@ -44,11 +44,14 @@ public class PopupController {
     // api/v1/admin/popup
     @GetMapping()
     public ResponseEntity<PopupListDto> getList(
-            @RequestParam(defaultValue = "1") int page, //페이지 번호
-            @RequestParam(required = false) String keyword,//검색어
-            @RequestParam(required = false) String searchType) { //검색 필터링
-        return ResponseEntity.status(OK)
-                .body(popupService.getList(page, keyword, searchType));
+            @RequestParam(name = "p", defaultValue = "1") Integer page, // 페이지 번호
+            @RequestParam(name = "k", required = false) String keyword, // 검색어
+            @RequestParam(name = "s", required = false) String searchType) { //검색 필터링
+
+        PopupListDto popups = popupService.getList(page, keyword, searchType);
+        System.out.println("팝업 목록: " + popups);
+
+        return ResponseEntity.status(OK).body(popups);
     }
 
     //팝업 상세조회(R)

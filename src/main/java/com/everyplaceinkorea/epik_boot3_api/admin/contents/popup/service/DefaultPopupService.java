@@ -30,6 +30,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 @Service
 @RequiredArgsConstructor
@@ -183,26 +185,60 @@ public class DefaultPopupService implements PopupService {
     // 팝업 전체 조회 및 검색 기능
     @Override
     public PopupListDto getList(int page, String keyword, String searchType) {
+
+        int pageNumber = page - 1;
+        int pageSize = 15;
+
         //정렬 기준 만들기
         Sort sort = Sort.by("id").descending();
+
         //페이징조건 만들기
-        Pageable pageable = PageRequest.of(page - 1, 15, sort);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
+
         // repository 전체조회 메서드 호출하기
         Page<Popup> popupPage = popupRepository.searchPopup(keyword, searchType, pageable);
-        //반환받은 entity -> dto 로 변환해 controller로 반환하기
-        List<PopupDto> popupDtos = popupPage
-                .getContent()
-                .stream().map(popup -> {
+
+        // 페이지네이션 정보 추가
+        Long totalCount = popupPage.getTotalElements();
+        int totalPages = popupPage.getTotalPages();
+        boolean hasPrevPage = popupPage.hasPrevious();
+        boolean hasNextPage = popupPage.hasNext();
+
+        // 반환받은 entity -> dto 로 변환해 controller로 반환하기
+        List<PopupDto> popupDtos = popupPage.getContent()
+                .stream()
+                .map(popup -> {
                     PopupDto popupDto = modelMapper.map(popup, PopupDto.class);
                     popupDto.setWriter(popup.getMember().getNickname());
+
                     return popupDto;
                 }).toList();
 
-        PopupListDto popupListDto = new PopupListDto();
-        popupListDto.setPopupList(popupDtos);
-        popupListDto.setTotalCount(popupPage.getTotalElements());
+        // 페이지 목록 생성 - 현재 페이지 계산
+        int currentPage = popupPage.getNumber() + 1;
+        List<Long> pages = LongStream.rangeClosed(
+                Math.max(1, currentPage - 2),
+                Math.min(totalPages, currentPage + 2)
+        ).boxed().collect(Collectors.toList());
 
-        return popupListDto;
+        // 반환
+//        PopupListDto popupListDto = new PopupListDto();
+//        popupListDto.setPopupList(popupDtos);
+//        popupListDto.setTotalCount(popupPage.getTotalElements());
+//        popupListDto.setTotalPages(totalPages);
+//        popupListDto.setHasNext(hasNext);
+//        popupListDto.setHasPrev(hasPrev);
+//        popupListDto.setPages(pages);
+//
+//        return popupListDto;
+        return PopupListDto.builder()
+                .popupList(popupDtos)
+                .totalCount(totalCount)
+                .totalPages(totalPages)
+                .hasPrev(hasPrevPage)
+                .hasNext(hasNextPage)
+                .pages(pages)
+                .build();
     }
 
 
