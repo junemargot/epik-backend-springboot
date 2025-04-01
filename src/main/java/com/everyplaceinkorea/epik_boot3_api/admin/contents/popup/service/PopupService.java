@@ -17,7 +17,7 @@ public interface PopupService {
     // 상세 조회
     PopupResponseDto getPopup(Long id);
     // 수정
-    void update(Long id, PopupRequestDto popupRequestDto);
+    void update(Long id, PopupRequestDto popupRequestDto, MultipartFile file) throws IOException;
     // 삭제
     void delete(Long id);
     // 비공개 상태 변경

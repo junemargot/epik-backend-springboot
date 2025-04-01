@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface PopupTagRepository extends JpaRepository<PopupTag, Long> {
     List<PopupTag> findAllByPopupId(Long id);
+
+    void deleteAllByPopupId(Long id);
 }

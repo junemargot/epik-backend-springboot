@@ -17,6 +17,7 @@ public class PopupResponseDto {
     private String title;
     private String content;
     private String address;
+    private String operationTime;
     private LocalDate startDate;
     private LocalDate endDate;
     private String snsLink;
@@ -28,6 +29,5 @@ public class PopupResponseDto {
     private LocalDateTime writeDate;
     private String addressDetail;
     private String[] saveImageNames; // 첨부파일 파일명
-
 //    private List<PopupImageDto> images;
 }

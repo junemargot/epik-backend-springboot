@@ -153,7 +153,7 @@ public class DefaultPopupService implements PopupService {
         popupRepository.save(popup);
     }
 
-    //팝업 상세조회
+    // 팝업 상세조회
     @Transactional
     @Override
     public PopupResponseDto getPopup(Long id) {
@@ -222,15 +222,6 @@ public class DefaultPopupService implements PopupService {
         ).boxed().collect(Collectors.toList());
 
         // 반환
-//        PopupListDto popupListDto = new PopupListDto();
-//        popupListDto.setPopupList(popupDtos);
-//        popupListDto.setTotalCount(popupPage.getTotalElements());
-//        popupListDto.setTotalPages(totalPages);
-//        popupListDto.setHasNext(hasNext);
-//        popupListDto.setHasPrev(hasPrev);
-//        popupListDto.setPages(pages);
-//
-//        return popupListDto;
         return PopupListDto.builder()
                 .popupList(popupDtos)
                 .totalCount(totalCount)
@@ -243,7 +234,7 @@ public class DefaultPopupService implements PopupService {
 
 
     @Override
-    public void update(Long id, PopupRequestDto popupRequestDto) {
+    public void update(Long id, PopupRequestDto popupRequestDto, MultipartFile file) {
 //        Popup popup = popupRepository.findById(id).orElseThrow();
 //        Member writer = memberRepository.findById(popupRequestDto.getWriter()).orElseThrow();
 //        PopupCategory popupCategory = popupCategoryRepository.findById(popupRequestDto.getWriter()).orElseThrow();
@@ -253,6 +244,60 @@ public class DefaultPopupService implements PopupService {
 //
 //        List<PopupTag> popupTags = updatePopupTags(popupRequestDto.getTags());
 //        popupTagRepository.saveAll(popupTags);
+
+        // 기존 팝업 엔티티 조회
+        Popup popup = popupRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("팝업게시물을 찾을 수 없습니다. ID: " + id));
+
+        // 관련 엔티티 조회
+        Member member = memberRepository.findById(popupRequestDto.getWriter())
+                .orElseThrow(() -> new IllegalArgumentException("작성자를 찾을 수 없습니다."));
+        PopupCategory popupCategory = popupCategoryRepository.findById(popupRequestDto.getPopupCategory())
+                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾을 수 없습니다."));
+        PopupRegion popupRegion = popupRegionRepository.findById(popupRequestDto.getPopupRegion())
+                .orElseThrow(() -> new IllegalArgumentException("지역을 찾을 수 없습니다."));
+
+        // 팝업 엔티티 업데이트
+        popup.setTitle(popupRequestDto.getTitle());
+        popup.setContent(popupRequestDto.getContent());
+        popup.setAddress(popupRequestDto.getAddress());
+        popup.setAddressDetail(popupRequestDto.getAddressDetail());
+        popup.setStartDate(popupRequestDto.getStartDate());
+        popup.setEndDate(popupRequestDto.getEndDate());
+        popup.setOperationTime(popupRequestDto.getOperationTime());
+        popup.setSnsLink(popupRequestDto.getSnsLink());
+        popup.setWebLink(popupRequestDto.getWebLink());
+        popup.setType(popupRequestDto.getType());
+        popup.addPopupCategory(popupCategory);
+        popup.addPopupRegion(popupRegion);
+        popup.addMember(member);
+
+        // 팝업 저장
+        popupRepository.save(popup);
+
+        // 기존 태그 삭제
+        popupTagRepository.deleteAllByPopupId(id);
+
+        // 새 태그 추가
+        String[] tags = popupRequestDto.getTags();
+        if(tags != null && tags.length > 0) {
+            for (String tag : tags) {
+                PopupTag popupTag = PopupTag.builder()
+                        .tag(tag)
+                        .popup(popup)
+                        .build();
+                popupTagRepository.save(popupTag);
+            }
+        }
+
+        // 이미지 처리
+//        if(file != null && !file.isEmpty()) {
+//            // 기존 이미지 삭제
+//            popupImageRepository.deleteAllById(id);
+//
+//            // 새 이미지 저장
+//            String originalFilename = file.getOriginalFilename();
+//            String savedFileName = UUID.randomUUID().toString() + "_" + originalFilename;
+//        }
 
     }
 

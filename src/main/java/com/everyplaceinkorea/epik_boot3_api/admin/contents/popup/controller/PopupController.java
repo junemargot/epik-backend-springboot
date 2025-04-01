@@ -68,8 +68,8 @@ public class PopupController {
     public ResponseEntity<PopupListDto> update(
             @PathVariable Long id,
             @RequestPart(name = "request") PopupRequestDto popupRequestDto,
-            @RequestPart MultipartFile file) {
-        popupService.update(id, popupRequestDto);
+            MultipartFile file) throws IOException {
+        popupService.update(id, popupRequestDto, file);
         return ResponseEntity.noContent().build();
     }
 
