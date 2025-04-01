@@ -3,6 +3,8 @@ package com.everyplaceinkorea.epik_boot3_api.entity.popup;
 import com.everyplaceinkorea.epik_boot3_api.admin.contents.popup.dto.PopupTagDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @ToString
@@ -20,7 +22,8 @@ public class PopupTag {
     private String tag;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "popup_id")
+    @JoinColumn(name = "popup_id", foreignKey = @ForeignKey(name = "FK_POPUP_TAG_POPUP"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Popup popup;
 
     public void updatePopupTag(PopupTagDto popupTagDto) {

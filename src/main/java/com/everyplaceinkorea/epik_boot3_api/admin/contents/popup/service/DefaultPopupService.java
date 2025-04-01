@@ -139,10 +139,18 @@ public class DefaultPopupService implements PopupService {
     // 팝업 삭제
     @Override
     public void delete(Long id) {
-        Popup popup = popupRepository.findById(id).orElseThrow();
-        popup.delete();
+        Popup popup = popupRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당하는 게시물을 찾을 수 없습니다."));
+//        popup.delete();
+        // 팝업 이미지 삭제
+        popupImageRepository.deleteAllByPopupId(id);
 
-        popupRepository.save(popup);
+        // 팝업 태그 삭제
+        popupTagRepository.deleteAllByPopupId(id);
+
+        // 게시물 삭제
+        popupRepository.deleteById(id);
+
+//        popupRepository.save(popup);
     }
 
     @Override
