@@ -77,6 +77,9 @@ public class Popup {
     @Column(name = "type")
     private String type;
 
+    @Column(name = "is_private", nullable = false, columnDefinition = "boolean default false")
+    private boolean isPrivate = false; // 게시물의 공개여부 기본값은 공개(false)
+
     public void addMember(Member member) {
         this.member = member;
     }
@@ -94,10 +97,14 @@ public class Popup {
         this.status = Status.DELETE;
     }
 
-    // 상태 변경
-    public void changeStatus() {
-        this.status = (this.status == Status.ACTIVE) ? Status.HIDDEN : Status.ACTIVE;
+    public void togglePrivate() {
+        this.isPrivate = !this.isPrivate;
     }
+
+    // 상태 변경
+//    public void changeStatus() {
+//        this.status = (this.status == Status.ACTIVE) ? Status.HIDDEN : Status.ACTIVE;
+//    }
 
     //수정 메서드
     public void updatePopup(PopupRequestDto popupRequestDto, Member member,
@@ -113,5 +120,10 @@ public class Popup {
         this.popupCategory = popupCategory;
         this.popupRegion = popupRegion;
         this.addressDetail = popupRequestDto.getAddressDetail();
+    }
+
+    // 비공개 상태 메서드
+    public void changeStatus() {
+        this.status = (this.status == Status.ACTIVE) ? Status.HIDDEN : Status.ACTIVE;
     }
 }

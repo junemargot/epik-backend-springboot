@@ -83,10 +83,19 @@ public class PopupController {
 
     // 팝업 비공개/공개 상태 변경
     // api/v1/admin/popup/{id}/status
-    @PatchMapping("{id}/status")
-    public ResponseEntity <Void> changeMusicalStatus(@PathVariable Long id) {
-        popupService.updatePopupStatus(id);
+//    @PatchMapping("{id}/status")
+//    public ResponseEntity <Void> changeMusicalStatus(@PathVariable Long id) {
+//        popupService.updatePopupStatus(id);
+//        return ResponseEntity.noContent().build();
+//    }
+
+    @PatchMapping("{id}/change-status")
+    public ResponseEntity<Void> chageStatus(@PathVariable Long id) {
+        popupService.changeStatus(id);
+
         return ResponseEntity.noContent().build();
     }
+
+
 }
 

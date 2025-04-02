@@ -1,9 +1,6 @@
 package com.everyplaceinkorea.epik_boot3_api.anonymous.signup.service;
 
-import com.everyplaceinkorea.epik_boot3_api.anonymous.signup.dto.EmailCheckDto;
-import com.everyplaceinkorea.epik_boot3_api.anonymous.signup.dto.NicknameCheckDto;
-import com.everyplaceinkorea.epik_boot3_api.anonymous.signup.dto.SignupRequestDto;
-import com.everyplaceinkorea.epik_boot3_api.anonymous.signup.dto.UsernameCheckDto;
+import com.everyplaceinkorea.epik_boot3_api.anonymous.signup.dto.*;
 import com.everyplaceinkorea.epik_boot3_api.entity.member.Member;
 import com.everyplaceinkorea.epik_boot3_api.repository.Member.MemberRepository;
 import org.modelmapper.ModelMapper;
@@ -14,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -73,9 +71,6 @@ public class DefaultSignupService implements SignupService {
        }
         return dto;
     }
-
-
-
 
     //3. 인증이메일전송
     @Override
@@ -156,7 +151,7 @@ public class DefaultSignupService implements SignupService {
         String encodedPassword = passwordEncoder.encode(member.getPassword());
         member.setPassword(encodedPassword);
 
-        Member saved= memberRepository.save(member);
+        Member saved = memberRepository.save(member);
         System.out.println("saved ==" + saved);
         //가입 타입, 마지막 방문 기록 기능 추가 필요
         return modelMapper.map(saved, SignupRequestDto.class);

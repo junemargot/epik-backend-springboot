@@ -52,14 +52,13 @@ public class SecurityConfig {
             .cors(cors->cors.configurationSource(corsConfigurationSource))
 //                .cors(AbstractHttpConfigurer::disable)
             .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(authorizeRequests
-                    // 인터렙트 URL
-                    -> authorizeRequests
+            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
 //                    .requestMatchers("/admin/**").hasRole("ADMIN")
 //                    .requestMatchers("/member/**").hasAnyRole("ADMIN", "MEMBER")
                     .requestMatchers("/post/**").authenticated()
+                    .requestMatchers("/images/**").permitAll()
+//                    .requestMatchers("/api/v1/admin/user/current").hasRole("ROLE_ADMIN")
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //트라이
-
                     .anyRequest().permitAll())
             // 인증방식 설정
             .formLogin(Customizer.withDefaults())

@@ -21,4 +21,5 @@ public class PopupDto {
     private String writer;
     private LocalDateTime writeDate;
     private Integer viewCount;
+    private boolean isPrivate; // 비공개 상태 필드
 }

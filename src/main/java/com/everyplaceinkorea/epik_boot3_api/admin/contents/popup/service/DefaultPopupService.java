@@ -153,13 +153,23 @@ public class DefaultPopupService implements PopupService {
 //        popupRepository.save(popup);
     }
 
+    // 팝업 비공개
     @Override
-    public void updatePopupStatus(Long id) {
-        Popup popup = popupRepository.findById(id).orElseThrow();
-//        popup.setStatus(popup.getStatus() == Status.HIDDEN ? Status.ACTIVE : Status.HIDDEN);
+    @Transactional
+    public void changeStatus(Long id) {
+        Popup popup = popupRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("팝업 게시물을 찾을 수 없습니다."));
+
         popup.changeStatus();
         popupRepository.save(popup);
     }
+
+//    @Override
+//    public void updatePopupStatus(Long id) {
+//        Popup popup = popupRepository.findById(id).orElseThrow();
+////        popup.setStatus(popup.getStatus() == Status.HIDDEN ? Status.ACTIVE : Status.HIDDEN);
+//        popup.changeStatus();
+//        popupRepository.save(popup);
+//    }
 
     // 팝업 상세조회
     @Transactional

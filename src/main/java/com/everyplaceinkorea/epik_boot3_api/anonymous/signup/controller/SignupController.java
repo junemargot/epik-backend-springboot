@@ -41,17 +41,14 @@ public class SignupController {
 
     //3. email 인증 확인
     @PostMapping("/checkEmail")
-    public Map<String, String> sendemail(
-            @RequestBody EmailCheckDto emailCheckDto
-            ){
+    public Map<String, String> sendemail(@RequestBody EmailCheckDto emailCheckDto){
         return signupService.emailCheck(emailCheckDto);
     }
 
     //4. 최종 버튼
     @PostMapping()
-    public ResponseEntity<SignupRequestDto> signup(
-            @RequestBody SignupRequestDto signupRequestDto
-            ) {
+    public ResponseEntity<SignupRequestDto> signup(@RequestBody SignupRequestDto signupRequestDto) {
+
         SignupRequestDto saved = signupService.signup(signupRequestDto);
         System.out.println(saved);
         return ResponseEntity.ok(saved);

@@ -57,7 +57,8 @@ spring:
   # 정적리소스 접근 경로 설정
   web:
     resources:
-      static-locations: file:../uploads/
+      static-locations: classpath:/static/
+#      static-locations: file:../uploads/
 
 epik:
   jwt:

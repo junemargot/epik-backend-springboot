@@ -10,18 +10,24 @@ import java.io.IOException;
 import java.util.List;
 
 public interface PopupService {
+
     // 등록
     Long create(PopupRequestDto popupRequestDto, MultipartFile[] files) throws IOException;
+
     // 전체 조회 및 검색
     PopupListDto getList(int page, String keyword, String searchType);
+
     // 상세 조회
     PopupResponseDto getPopup(Long id);
+
     // 수정
     void update(Long id, PopupRequestDto popupRequestDto, MultipartFile file) throws IOException;
+
     // 삭제
     void delete(Long id);
-    // 비공개 상태 변경
-    void updatePopupStatus(Long id);
+
+    // 비공개
+    void changeStatus(Long id);
 
 
 }
