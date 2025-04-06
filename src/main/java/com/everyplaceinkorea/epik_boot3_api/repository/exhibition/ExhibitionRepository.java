@@ -33,4 +33,5 @@ public interface ExhibitionRepository extends JpaRepository<Exhibition, Long> {
   // 랜덤이미지조회
   @Query(value = "SELECT e FROM Exhibition e ORDER BY RAND() LIMIT 10")
   List<Exhibition> findExhibitionByRandom();
+
 }

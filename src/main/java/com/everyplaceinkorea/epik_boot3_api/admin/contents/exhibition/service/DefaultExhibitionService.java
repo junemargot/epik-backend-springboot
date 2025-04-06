@@ -250,10 +250,19 @@ public class DefaultExhibitionService implements ExhibitionService {
 
   @Override
   public void delete(Long id) {
-    if(!exhibitionRepository.existsById(id)) {
-      throw new RuntimeException("EXHIBITION CONTENT NOT FOUND");
-    }
+    Exhibition exhibition = exhibitionRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("해당하는 전시회 게시물을 찾을 수 없습니다."));
 
+    // 전시회 이미지 삭제
+    exhibitionImageRepository.deleteAllByExhibitionId(id);
+
+    // 전시회 티켓 오피스 삭제
+    exhibitionTicketOfficeRepository.deleteByExhibitionId(id);
+
+    // 전시회 티켓 가격 삭제
+    exhibitionTicketPriceRepository.deleteByExhibitionId(id);
+
+    // 전시회 게시물 삭제
     exhibitionRepository.deleteById(id);
   }
 

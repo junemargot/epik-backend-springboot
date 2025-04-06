@@ -37,7 +37,8 @@ public class MusicalController {
     }
 
     // 뮤지컬 전체 조회 및 검색
-    @GetMapping()
+    @GetMapping
+//    @GetMapping(value = "/admin/musical", params = "!status")
     public ResponseEntity<MusicalListDto> getList(
             @RequestParam(name = "p", defaultValue = "1") int page, // 페이지 번호
             @RequestParam(name = "k", required = false) String keyword, // 검색어
@@ -47,7 +48,7 @@ public class MusicalController {
     }
 
     // 뮤지컬 전체 조회 및 검색
-//    @GetMapping()
+//    @GetMapping(value = "/admin/musical", params = "status")
 //    public ResponseEntity<MusicalListDto> getFilteredList(
 //            @RequestParam(name = "p", defaultValue = "1") int page, // 페이지 번호
 //            @RequestParam(name = "k", required = false) String keyword, // 검색어

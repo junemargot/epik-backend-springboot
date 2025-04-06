@@ -376,12 +376,30 @@ public class DefaultMusicalService implements MusicalService {
         return updatedPrices;
     }
 
-    // 뮤지컬 삭제
-    @Transactional
+    // 뮤지컬 소프트 삭제
+//    @Transactional
+//    @Override
+//    public void delete(Long id) {
+//        Musical musical = musicalRepository.findById(id).orElseThrow();
+//        musical.delete();
+//    }
+
     @Override
     public void delete(Long id) {
-        Musical musical = musicalRepository.findById(id).orElseThrow();
-        musical.delete();
+        Musical musical = musicalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 게시물을 찾을 수 없습니다."));
+
+        // 뮤지컬 이미지 삭제
+        musicalImageRepository.deleteAllByMusicalId(id);
+
+        // 뮤지컬 티켓 오피스 삭제
+        musicalTicketOfficeRepository.deleteByMusicalId(id);
+
+        // 뮤지컬 티켓 가격 삭제
+        musicalTicketPriceRepository.deleteByMusicalId(id);
+
+        // 뮤지컬 게시물 삭제
+        musicalRepository.deleteById(id);
     }
 
     // 뮤지컬 비공개/공개 상태 변경

@@ -29,6 +29,7 @@ public class ExhibitionController {
 //    return ResponseEntity.ok(concertList);
 //  }
 
+  // 전시회 목록 조회
   @GetMapping
   public ResponseEntity<ExhibitionListDto> getAllExhibitions(
           @RequestParam(name = "p", defaultValue = "1") Integer page,
@@ -42,7 +43,7 @@ public class ExhibitionController {
     return ResponseEntity.ok().body(exhibitions);
   }
 
-
+  // 전시회 상세 조회
   @GetMapping("/{id}")
   public ResponseEntity<ExhibitionResponseDto> getExhibitionById(@PathVariable Long id) {
 
@@ -50,7 +51,7 @@ public class ExhibitionController {
     return ResponseEntity.ok(exhibition);
   }
 
-  // 콘서트 등록 요청
+  // 전시회 등록
   @PostMapping
   public ResponseEntity<ExhibitionResponseDto> createExhibition(@ModelAttribute ExhibitionRequestDto exhibitionRequestDto,
                                                                 MultipartFile files) throws IOException {
@@ -58,6 +59,15 @@ public class ExhibitionController {
     return ResponseEntity.status(HttpStatus.OK)
             .body(exhibitionService.create(exhibitionRequestDto, files));
 
+  }
+
+  // 전시회 삭제
+  @DeleteMapping("{id}")
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
+
+    exhibitionService.delete(id);
+
+    return ResponseEntity.noContent().build();
   }
 
 }
