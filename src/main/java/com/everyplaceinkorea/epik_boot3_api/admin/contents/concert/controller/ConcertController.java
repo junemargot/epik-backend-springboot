@@ -61,6 +61,15 @@ public class ConcertController {
 
   }
 
+  // 콘서트 삭제
+  @DeleteMapping("{id}")
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
+
+    concertService.delete(id);
+
+    return ResponseEntity.noContent().build();
+  }
+
 
 
 }

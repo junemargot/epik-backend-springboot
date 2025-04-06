@@ -60,6 +60,7 @@ public class SecurityConfig {
 //                    .requestMatchers("/api/v1/admin/user/current").hasRole("ROLE_ADMIN")
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //트라이
                     .anyRequest().permitAll())
+
             // 인증방식 설정
             .formLogin(Customizer.withDefaults())
 

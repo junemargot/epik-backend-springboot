@@ -241,10 +241,19 @@ public class DefatulConcertService implements ConcertService {
 
   @Override
   public void delete(Long id) {
-    if(!concertRepository.existsById(id)) {
-      throw new RuntimeException("CONCERT CONTENT NOT FOUND");
-    }
+    Concert concert = concertRepository.findById(id).orElseThrow(() ->
+            new IllegalArgumentException("해당하는 게시물을 찾을 수 없습니다."));
 
+    // 콘서트 이미지 삭제
+    concertImageRepository.deleteAllByConcertId(id);
+
+    // 콘서트 티켓 오피스 삭제
+    concertTicketOfficeRepository.deleteAllByConcertId(id);
+
+    // 콘서트 티켓 가격 삭제
+    concertTicketPriceRepository.deleteAllByConcertId(id);
+
+    // 콘서트 게시물 삭제
     concertRepository.deleteById(id);
   }
 
