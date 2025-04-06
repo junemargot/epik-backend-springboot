@@ -3,13 +3,10 @@ package com.everyplaceinkorea.epik_boot3_api.admin.contents.musical.service;
 import com.everyplaceinkorea.epik_boot3_api.admin.contents.musical.dto.*;
 import com.everyplaceinkorea.epik_boot3_api.entity.member.Member;
 import com.everyplaceinkorea.epik_boot3_api.entity.Region;
-import com.everyplaceinkorea.epik_boot3_api.entity.musical.MusicalImage;
-import com.everyplaceinkorea.epik_boot3_api.entity.musical.MusicalTicketOffice;
-import com.everyplaceinkorea.epik_boot3_api.entity.musical.MusicalTicketPrice;
+import com.everyplaceinkorea.epik_boot3_api.entity.musical.*;
 import com.everyplaceinkorea.epik_boot3_api.EditorImage.UploadFolderType;
 import com.everyplaceinkorea.epik_boot3_api.repository.Member.MemberRepository;
 import com.everyplaceinkorea.epik_boot3_api.repository.RegionRepository;
-import com.everyplaceinkorea.epik_boot3_api.entity.musical.Musical;
 import com.everyplaceinkorea.epik_boot3_api.repository.musical.MusicalImageRepository;
 import com.everyplaceinkorea.epik_boot3_api.repository.musical.MusicalRepository;
 import com.everyplaceinkorea.epik_boot3_api.repository.musical.MusicalTicketOfficeRepository;
@@ -70,6 +67,7 @@ public class DefaultMusicalService implements MusicalService {
 
         Musical musical = modelMapper.map(requestDto, Musical.class);
 
+        musical.setViewCount(0);
         musical.addMember(member);
         musical.addRegion(region);
         musical.addFileSavedName(saveFileName);
@@ -191,9 +189,14 @@ public class DefaultMusicalService implements MusicalService {
 
     // 뮤지컬 상세조회
     @Override
+    @Transactional
     public MusicalResponseDto getMusical(Long id) {
-        Musical musical = musicalRepository.findById(id).orElseThrow();
-        log.info("musical = {}", musical);
+        Musical musical = musicalRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 게시물을 찾을 수 없습니다."));
+
+        musical.setViewCount(musical.getViewCount() + 1);
+        musicalRepository.save(musical); // 변경사항 저장
+
         // 티켓 
         List<MusicalTicketPrice> allByMusicalTicketPrice = musicalTicketPriceRepository.findAllByMusicalId(musical.getId());
         // 예매처 
@@ -262,6 +265,58 @@ public class DefaultMusicalService implements MusicalService {
                 .pages(pages)
                 .build();
     }
+
+//    @Override
+//    public MusicalListDto getFilteredList(Integer page, String keyword, String searchType, String status) throws IOException {
+//
+//        // 정렬 기준 만들기
+//        Sort sort = Sort.by("id").descending();
+//
+//        // 페이징 조건 만들기
+//        Pageable pageable = PageRequest.of(page - 1, 15, sort);
+//
+//        // Status 열거형으로 변환
+//        Status statusEnum = Status.valueOf(status);
+//
+//        // repository 상태 필터링 메서드 호출
+//        Page<Musical> musicalPage = musicalRepository.searchMusicalWithStatus(keyword, searchType, statusEnum, pageable);
+//
+//        // 페이징 결과
+//        List<MusicalDto> musicalDtos = musicalPage
+//                .getContent()
+//                .stream()
+//                .map(musical -> {
+//                    MusicalDto musicalDto = modelMapper.map(musical, MusicalDto.class);
+//                    musicalDto.setWriter(musical.getMember().getNickname());
+//                    musicalDto.setStatus(musical.getStatus().name());
+//
+//                    return musicalDto;
+//                })
+//                .collect(Collectors.toList()); // Stream을 List로 반환
+//
+//        // 페이징 결과
+//        long totalCount = musicalPage.getTotalElements();
+//        int totalPages = musicalPage.getTotalPages();
+//        boolean hasPrevPage = musicalPage.hasPrevious();
+//        boolean hasNextPage = musicalPage.hasNext();
+//
+//        // 페이지 목록 생성
+//        int currentPage = musicalPage.getNumber() + 1;
+//        List<Long> pages = LongStream.rangeClosed(
+//                Math.max(1, currentPage - 2),
+//                Math.min(totalPages, currentPage + 2)
+//        ).boxed().collect(Collectors.toList());
+//
+//        return MusicalListDto.builder()
+//                .musicalList(musicalDtos)
+//                .totalCount(totalCount)
+//                .totalPages(totalPages)
+//                .hasPrev(hasPrevPage)
+//                .hasNext(hasNextPage)
+//                .pages(pages)
+//                .build();
+//    }
+
 
     // 뮤지컬 수정
     @Transactional

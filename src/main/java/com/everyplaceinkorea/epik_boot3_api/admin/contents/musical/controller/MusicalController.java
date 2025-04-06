@@ -46,6 +46,19 @@ public class MusicalController {
                 .body(musicalService.getList(page, keyword, searchType));
     }
 
+    // 뮤지컬 전체 조회 및 검색
+//    @GetMapping()
+//    public ResponseEntity<MusicalListDto> getFilteredList(
+//            @RequestParam(name = "p", defaultValue = "1") int page, // 페이지 번호
+//            @RequestParam(name = "k", required = false) String keyword, // 검색어
+//            @RequestParam(name = "s", required = false) String searchType, // 검색 필터링
+//            @RequestParam(name = "status", defaultValue = "ACTIVE") String status) throws IOException { // 상태 필터링
+//
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .body(musicalService.getFilteredList(page, keyword, searchType, status));
+//
+//    }
+
     // 뮤지컬 게시물 상세 조회
     @GetMapping("{id}")
     public ResponseEntity<MusicalResponseDto> getMusical(@PathVariable Long id) {

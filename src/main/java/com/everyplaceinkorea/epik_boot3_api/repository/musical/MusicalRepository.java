@@ -1,6 +1,7 @@
 package com.everyplaceinkorea.epik_boot3_api.repository.musical;
 
 import com.everyplaceinkorea.epik_boot3_api.entity.musical.Musical;
+import com.everyplaceinkorea.epik_boot3_api.entity.musical.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,6 +36,25 @@ public interface MusicalRepository extends JpaRepository<Musical, Long> {
     Page<Musical> searchMusical(@Param("keyword") String keyword,
                                 @Param("searchType") String searchType,
                                 Pageable pageable);
+
+    // 상태 필터링 커스텀 쿼리
+//    @Query("SELECT m FROM Musical m WHERE " +
+//            "(:searchType IS NULL OR " +
+//            "(:searchType = 'ALL' AND (m.title LIKE %:keyword% OR m.content LIKE %:keyword%)) OR " +
+//            "(:searchType = 'TITLE' AND m.title LIKE %:keyword%) OR " +
+//            "(:searchType = 'CONTENT' AND m.content LIKE %:keyword%) OR " +
+//            "(:searchType = 'WRITER' AND m.member.nickname LIKE %:keyword%)) AND " +
+//            "(:keyword IS NULL OR " +
+//            "(:searchType = 'ALL' AND (m.title LIKE %:keyword% OR m.content LIKE %:keyword%)) OR " +
+//            "(:searchType = 'TITLE' AND m.title LIKE %:keyword%) OR " +
+//            "(:searchType = 'CONTENT' AND m.content LIKE %:keyword%) OR " +
+//            "(:searchType = 'WRITER' AND m.member.nickname LIKE %:keyword%)) AND " +
+//            "(m.status = :status)")
+//    Page<Musical> searchMusicalWithStatus(
+//            @Param("keyword") String keyword,
+//            @Param("searchType") String searchType,
+//            @Param("status") Status status,
+//            Pageable pageable);
 
     @Query("SELECT m FROM Musical m WHERE (:regionId IS NULL OR m.region.id = :regionId) AND m.endDate >= :endDate AND m.status = 'ACTIVE'")
     Page<Musical> findMusicalsByRegion(@Param("regionId") Long regionId, @Param("endDate") LocalDate endDate, Pageable pageable);

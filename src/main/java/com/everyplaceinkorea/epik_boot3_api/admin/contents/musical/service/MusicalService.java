@@ -22,5 +22,7 @@ public interface MusicalService {
     void delete(Long id);
     // 비공개 상태 변경
     void updateMusicalStatus(Long id);
+    // 필터된 리스트 조회
+//    MusicalListDto getFilteredList(Integer page, String keyword, String searchType, String status) throws IOException;
 
 }

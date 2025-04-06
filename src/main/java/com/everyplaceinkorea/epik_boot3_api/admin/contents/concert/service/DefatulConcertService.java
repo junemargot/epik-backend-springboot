@@ -147,7 +147,6 @@ public class DefatulConcertService implements ConcertService {
   @Override
   public ConcertResponseDto create(ConcertRequestDto concertRequestDto, MultipartFile files) throws IOException {
 
-    // 인증이 안되니깐 일단 임시로 데이터 넣어놓기
     concertRequestDto.setWriter(1L);
     concertRequestDto.setRegion(1L);
 

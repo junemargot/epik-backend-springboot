@@ -1,5 +1,6 @@
 package com.everyplaceinkorea.epik_boot3_api.admin.contents.musical.dto;
 
+import com.everyplaceinkorea.epik_boot3_api.admin.contents.musical.enums.Status;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -19,4 +20,5 @@ public class MusicalDto {
     private String writer;
     private LocalDateTime writeDate;
     private Integer viewCount;
+//    private String status; // 상태 필드 추가
 }
