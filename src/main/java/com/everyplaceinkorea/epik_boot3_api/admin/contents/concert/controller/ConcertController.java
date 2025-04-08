@@ -39,6 +39,7 @@ public class ConcertController {
     // ConcertService에서 검색 및 페이징 데이터를 가져옴
     ConcertListDto concerts = concertService.getList(page, keyword, searchType);
     System.out.println("콘서트 목록: " + concerts);
+    System.out.println("검색 파라미터 - searchType: " + searchType + ", keyword: " + keyword);
     // 가져온 데이터를 ResponseEntity로 반환
     return ResponseEntity.ok().body(concerts);
   }

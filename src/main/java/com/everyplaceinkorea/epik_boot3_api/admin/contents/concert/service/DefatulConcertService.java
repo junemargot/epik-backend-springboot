@@ -66,7 +66,7 @@ public class DefatulConcertService implements ConcertService {
     Pageable pageable = PageRequest.of(pageNumber, pageSize, sort);
 
     // 검색 조건에 맞는 데이터 가져오기
-    Page<Concert> concertPage = concertRepository.searchConcert(searchType, keyword, pageable);
+    Page<Concert> concertPage = concertRepository.searchConcert(keyword, searchType, pageable);
 
     long totalCount = concertPage.getTotalElements(); // 총 게시물 수
     int totalPages = concertPage.getTotalPages(); // 총 페이지 수
