@@ -12,6 +12,18 @@ spring:
               - email
               - profile
 
+#          kakao:
+#            client-id: ${KAKAO_CLIENT_ID}
+#            client-secret: ${KAKAO_CLIENT_SECRET}
+#            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+#            authorization-grant-type: authorization_codec
+#            client-authentication-method: client_secret_post
+#            client-name: kakao
+#            scope:
+#              - profile_nickname
+#              - account_email
+
+
   datasource:
     url: jdbc:h2:file:./data/testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
     driver-class-name: org.h2.Driver
