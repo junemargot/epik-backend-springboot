@@ -1,6 +1,6 @@
 package com.everyplaceinkorea.epik_boot3_api.admin.member.dto;
 
-import com.everyplaceinkorea.epik_boot3_api.admin.member.LoginType;
+import com.everyplaceinkorea.epik_boot3_api.entity.member.LoginType;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;

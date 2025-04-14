@@ -23,7 +23,7 @@ public class EpikUserDetails implements UserDetails, OAuth2User {
     private String password;
     private String email;
     private String nickname;
-
+    private String profileImage;
     private Collection<? extends GrantedAuthority> authorities; // *
 
     @Override

@@ -73,9 +73,9 @@ public class JwtUtil {
         claims.put("id", userDetails.getId());
         claims.put("username", userDetails.getUsername());
         claims.put("email", userDetails.getEmail());
-        claims.put("role", userDetails.getAuthorities());
         claims.put("nickname", userDetails.getNickname());
-
+        claims.put("profileImage", userDetails.getProfileImage());
+        claims.put("role", userDetails.getAuthorities());
 
         return Jwts.builder()
                 .setClaims(claims)

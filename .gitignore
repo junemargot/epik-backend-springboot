@@ -38,5 +38,8 @@ build/
 .vscode/
 
 data
-.mvn
+.mvn/
+mvnw
+mvnw.cmd
 .env
+pom.xml

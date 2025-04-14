@@ -11,17 +11,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import com.everyplaceinkorea.epik_boot3_api.auth.dto.KakaoRequestDto;
+import org.springframework.web.client.RestTemplate;
+
 
 import java.time.LocalDate;
 import java.util.*;
@@ -190,4 +189,189 @@ public class AuthController {
 
         return ResponseEntity.ok(responseDto);
     }
+
+    /**
+     * 카카오 로그인 API (Kakao OAuth 2.0 로그인 기능)
+     * 카카오 계정 정보를 클라이언트로부터 받아 회원 가입 또는 조회 후, JWT 토큰을 발급합니다.
+     *
+     * @param authHeader Authorization 헤더 (Bearer 토큰)
+     * @param response HttpServletResponse 객체 (쿠키에 토큰 저장)
+     * @return JWT 토큰과 프로필 이미지 URL 반환
+     */
+    @PostMapping("/login/kakao")
+    public ResponseEntity<?> kakaoLogin(@RequestHeader("Authorization") String authHeader, HttpServletResponse response) {
+
+        try {
+            String accessToken = authHeader.replace("Bearer ", "'");
+            System.out.println("Kakao AccessToken: " + accessToken);
+
+            // 카카오 API 호출
+            RestTemplate restTemplate = new RestTemplate();
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + accessToken);
+
+            // 사용자 정보 요청
+            ResponseEntity<Map> kakaoResponse = restTemplate.exchange(
+                    "https://kapi.kakao.com/v2/user/me",
+                    HttpMethod.GET,
+                    new HttpEntity<>(headers),
+                    Map.class
+            );
+            System.out.println("카카오 API 응답: " + kakaoResponse.getBody());
+
+            // 응답 파싱
+            Map<String, Object> kakaoAccount = (Map)kakaoResponse.getBody().get("kakao_account");
+            Map<String, Object> profile = (Map)kakaoAccount.get("profile");
+
+            String email = (String) kakaoAccount.get("email");
+            String nickname = (String) profile.get("nickname");
+
+            String profileImage = (String) profile.get("profile_image_url");
+            // 프로필 이미지 동의하지 않을 경우 기본 이미지 설정
+            if(profileImage == null || profileImage.isEmpty()) {
+                profileImage = "/images/basic.png"; // 기본 이미지 경로
+            }
+
+            final String finalProfileImage = profileImage;
+
+            // 4. 회원 가입 / 조회
+            Optional<Member> memberOptional = memberRepository.findByEmail(email);
+            Member member = memberOptional.orElseGet(() -> {
+                Member newMember = new Member();
+                newMember.setEmail(email);
+                newMember.setNickname(nickname);
+                newMember.setProfileImg(finalProfileImage);
+                newMember.setJoinDate(LocalDate.now());
+                newMember.setType((byte) 1);
+                newMember.setRole("ROLE_MEMBER");
+
+                return memberRepository.save(newMember);
+            });
+
+            // 5. 기존 회원인 경우 프로필 이미지 업데이트
+            if(memberOptional.isPresent() && profileImage != null) {
+                member.setProfileImg(profileImage);
+
+                if(member.getUsername() == null || member.getUsername().isEmpty()) {
+                    member.setUsername(email);
+                }
+
+                memberRepository.save(member);
+            }
+
+            // 6. JWT 토큰 생성
+            EpikUserDetails userDetails = EpikUserDetails.builder()
+                    .id(member.getId())
+                    .username(member.getUsername())
+                    .email(member.getEmail())
+                    .nickname(member.getNickname())
+                    .profileImage(member.getProfileImg())
+                    .authorities(Collections.singletonList(new SimpleGrantedAuthority(member.getRole())))
+                    .build();
+
+            String token = jwtUtil.generateToken(userDetails);
+
+            // 디버깅을 위한 토큰 출력
+            System.out.println("생성된 JWT 토큰: " + token);
+            System.out.println("토큰 부분 개수: " + token.split("\\.").length);
+
+            // 7. 응답 설정
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, createCookie(token).toString())
+                    .body(Map.of(
+                            "accessToken", token,
+                            "profileImage", profileImage // 클라이언트에 이미지 url 반환 (선택사항)
+                    ));
+        } catch(Exception e) {
+            e.printStackTrace();
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "카카오 로그인 처리 중 오류 발생: " + e.getMessage()));
+        }
+
+
+
+
+
+
+
+
+//        // 1. 카카오 계정 정보 추출(email, id, name)
+//        Long id = kakaoRequestDto.getId();
+//        String email = kakaoRequestDto.getEmail();
+//        String nickname = kakaoRequestDto.getNickname();
+//        String profileImage = kakaoRequestDto.getProfileImage();
+//
+//        System.out.println("입력된 카카오 정보 확인 - ID: " + id + "Email: " + email + "Nickname: " + nickname + "ProfileImage: " + profileImage);
+//
+//        // 2. 기존에 해당 이메일로 등록된 회원이 있는지 체크
+//        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+//
+//        // 3. 회원이 없으면 신규 가입 처리
+//        Member member;
+//        if(memberOptional.isEmpty()) {
+//            member = new Member();
+//            member.setUsername(email); // 이메일을 username으로 사용
+//            member.setNickname(nickname);
+//            member.setEmail(email);
+//            member.setProfileImg(profileImage); // 선택 동의 항목인 프로필 이미지 저장
+//            member.setJoinDate(LocalDate.now());
+//            member.setType((byte) 1); // 회원 유형: 일반 회원 설정
+//            member.setRole("ROLE_MEMBER");
+//            memberRepository.save(member);
+//            System.out.println("[[[[[ 비회원, 가입 완료 ]]]]]");
+//
+//        } else {
+//            // 이미 회원이면 기존 회원 데이터 사용
+//            member = memberOptional.get();
+//            System.out.println("[[[[ 회원입니다. ]]]]]");
+//        }
+//
+//        System.out.println("member-" + member.getRole());
+//        System.out.println("id: " + member.getId() + ", username: " + member.getUsername() + ", nickname: " + member.getNickname());
+//
+//        // 4. JWT 토큰 생성을 위해 EpikUserDetails 객체 생성 (인증 정보 객체)
+//        EpikUserDetails userDetails = EpikUserDetails.builder()
+//                .id(member.getId())
+//                .username(member.getUsername())
+//                .email(member.getEmail())
+//                .nickname(member.getNickname())
+//                .authorities(Collections.singletonList(new SimpleGrantedAuthority(member.getRole())))
+//                .build();
+//
+//        // 5. JwtUtil을 통해 토큰 생성
+//        String token = jwtUtil.generateToken(userDetails);
+//        System.out.println("생성된 토큰: " + token);
+//
+//        // 6. 생성된 토큰을 쿠키에 저장 (HTTP 전용)
+//        Cookie cookie = new Cookie("jwt_token", token);
+//        cookie.setHttpOnly(true); // Javascript에서 접근할 수 없도록 설정
+//        cookie.setSecure(true);   // HTTPS에서만 전송하도록 설정
+//        cookie.setPath("/");      // 쿠키가 모든 경로에서 유효하도록 설정
+//        cookie.setMaxAge(60 * 60 * 24); // 1일 동안 쿠키 유지
+//        response.addCookie(cookie);
+//
+//        // 7. KakaoResponseDto 생성 후, JWT 토큰과 함께 반환
+//        KakaoResponseDto responseDto = KakaoResponseDto.builder()
+//                .memberId(userDetails.getId())
+//                .accessToken(token)
+//                .build();
+//
+//        System.out.println("카카오 최종 응답 확인: " + responseDto);
+//
+//        return ResponseEntity.ok(responseDto);
+    }
+
+    // AuthController.java에 추가 쿠키 생성 메서드
+    private ResponseCookie createCookie(String token) {
+        return ResponseCookie.from("jwt_token", token)
+                .httpOnly(true)    // JavaScript 접근 차단
+                .secure(true)      // HTTPS 전용
+                .path("/")         // 모든 경로에서 유효
+                .maxAge(60 * 60 * 24) // 1일(86400초)
+                .sameSite("Lax")   // CSRF 방지
+                .domain("localhost") // 개발 환경 도메인
+                .build();
+    }
+
 }

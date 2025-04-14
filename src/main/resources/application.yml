@@ -1,0 +1,94 @@
+spring:
+  application:
+    name: epik-boot3-api
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}          # 구글 OAuth 클라이언트 ID (환경변수로 관리)
+            client-secret: ${GOOGLE_CLIENT_SECRET}  # 구글 OAuth 클라이언트 시크릿 (환경변수로 관리)
+            scope:
+              - email      # 사용자 이메일 정보 접근 권한
+              - profile    # 사용자 프로필 정보 접근 권한
+
+          kakao:
+            client-id: ${KAKAO_CLIENT_ID}                                  # 카카오 OAuth 플라이언트 ID (환경변수로 관리)
+#            redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
+            redirect-uri: http://localhost:3000/login/oauth2/code/kakao    # 로그인 후 리다이렉트될 경로
+            client-name: Kakao                                   # OAuth2 클라이언트 이름
+            authorization-grant-type: authorization_code         # 인증 코드 방식 사용
+            client-authentication-method: client_secret_post     # 클라이언트 시크릿 전송 방법 (POST)
+            scope:
+              - profile_nickname   # 카카오에서 닉네임 정보 접근 권한
+              - profile_image      # 카카오에서 프로필 이미지 정보 접근 권한
+              - account_email      # 카카오에서 이메일 정보 접근 권한
+
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize   # 카카오 OAuth 인증 요청 URI
+            token-uri: https://kauth.kakao.com/oauth/token               # 카카오 OAuth 토큰 발급 URI
+            user-info-uri: https://kapi.kakao.com/v2/user/me             # 카카오 사용자 정보 조회 URI
+            user-name-attribute: id                                      # 사용자 식별자로 쓸 필드(카카오에서는 'id')
+
+  datasource:
+    url: jdbc:h2:file:./data/testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update # 테이블 자동 생성
+    properties:
+      hibernate:
+        format_sql: true # SQL 보기 좋게 포맷팅
+        show_sql: true # 로그에 하이버네이트가 생성한 쿼리문을 출력하는 옵션
+
+
+  h2:
+    console:
+      enabled: true # H2 웹 콘솔 활성화
+      path: /h2-console # H2 콘솔 접속 경로 설정
+      settings:
+        web-allow-others: true # 외부 접속 허용
+        trace: false
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 30MB
+      location: C:\\upload
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: eun00864@gmail.com # 앱 비밀번호 발급받은 google 계정
+    password: dhbtvdxabizvdrst # 발급받은 앱 비밀번호 (16자리 입니다.) -> 복붙
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+          auth: true
+  # 정적리소스 접근 경로 설정
+  web:
+    resources:
+      static-locations: classpath:/static/
+#      static-locations: file:../uploads/
+
+epik:
+  jwt:
+    secret: "aBfnSNvv5P2JlSpFLxtPvsvSGI0/Rs0H9uqW3JwQ89GoGbGeCI41MD7PwvF1CyOmqH1+FchjH+pd0vpjtnr0Pg=="
+
+server:
+  servlet:
+    context-path: /api/v1
+  max-http-request-header-size: 8192
+  port: 8081
+
+file:
+  tmp-dir: uploads/temp
+  upload-dir: uploads/images

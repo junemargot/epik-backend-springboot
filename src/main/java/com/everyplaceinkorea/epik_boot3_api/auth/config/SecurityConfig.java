@@ -1,6 +1,8 @@
 package com.everyplaceinkorea.epik_boot3_api.auth.config;
 
 import com.everyplaceinkorea.epik_boot3_api.auth.filter.JwtAuthenticationFilter_v2;
+import com.everyplaceinkorea.epik_boot3_api.auth.handler.OAuth2AuthenticationSuccessHandler;
+import com.everyplaceinkorea.epik_boot3_api.auth.service.CustomOAuth2UserService;
 import com.everyplaceinkorea.epik_boot3_api.auth.util.JwtUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +35,16 @@ public class SecurityConfig {
   }
 
   @Bean
+  public CustomOAuth2UserService customOAuthUserService() {
+    return new CustomOAuth2UserService();
+  }
+
+  @Bean
+  public OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler() {
+    return new OAuth2AuthenticationSuccessHandler();
+  }
+
+  @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
@@ -47,22 +59,24 @@ public class SecurityConfig {
           HttpSecurity http,
           CorsConfigurationSource corsConfigurationSource) throws Exception {
 
-    http
-            // .configurationSource()는 cors 메소드의 설정 메소드, 즉 corsConfigurationSource 조건으로 설정하겠다
-            .cors(cors->cors.configurationSource(corsConfigurationSource))
-//                .cors(AbstractHttpConfigurer::disable)
-            .csrf(AbstractHttpConfigurer::disable)
-            .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-//                    .requestMatchers("/admin/**").hasRole("ADMIN")
-//                    .requestMatchers("/member/**").hasAnyRole("ADMIN", "MEMBER")
-                    .requestMatchers("/post/**").authenticated()
-                    .requestMatchers("/images/**").permitAll()
-//                    .requestMatchers("/api/v1/admin/user/current").hasRole("ROLE_ADMIN")
-                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //트라이
-                    .anyRequest().permitAll())
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource))
+        .csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+            .requestMatchers("/post/**").authenticated()
+            .requestMatchers("/images/**").permitAll()
+//            .requestMatchers("/login/**", "/oauth2/**").permitAll()
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() //트라이
+            .anyRequest().permitAll())
 
             // 인증방식 설정
             .formLogin(Customizer.withDefaults())
+
+            // OAuth2 로그인 설정 추가
+            .oauth2Login(oauth2 -> oauth2
+                    .userInfoEndpoint(userInfo -> userInfo
+                            .userService(customOAuthUserService())
+                    ).successHandler(oAuth2AuthenticationSuccessHandler())
+            )
 
             .sessionManagement(session-> session
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

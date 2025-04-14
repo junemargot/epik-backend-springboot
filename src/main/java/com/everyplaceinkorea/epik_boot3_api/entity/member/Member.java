@@ -1,6 +1,5 @@
 package com.everyplaceinkorea.epik_boot3_api.entity.member;
 
-import com.everyplaceinkorea.epik_boot3_api.admin.member.LoginType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -13,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "member")
 public class Member {
 
@@ -58,5 +58,19 @@ public class Member {
 
     @Column(name = "profile_text", nullable = true)
     private String profileText;
+
+    // OAuth2 관련
+    // providerId: 소셜로그인 한 유저의 고유 ID
+//    private String loginId; // Unique Identifier for OAuth users
+
+    // provider: google, kakao, naver이 들어감
+//    private String provider;
+
+    public Member update(String name, String picture) {
+        this.nickname = name;
+        this.profileImg = picture;
+
+        return this;
+    }
 }
 
