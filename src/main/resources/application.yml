@@ -92,3 +92,9 @@ server:
 file:
   tmp-dir: uploads/temp
   upload-dir: uploads/images
+
+logging:
+  level:
+    com.everyplaceinkorea.epik_boot3_api: DEBUG
+    org.springframework: INFO
+    org.hibernate: INFO
