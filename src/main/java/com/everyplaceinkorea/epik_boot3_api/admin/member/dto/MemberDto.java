@@ -1,5 +1,6 @@
 package com.everyplaceinkorea.epik_boot3_api.admin.member.dto;
 
+import com.everyplaceinkorea.epik_boot3_api.entity.member.LoginType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +21,5 @@ public class MemberDto {
   private String nickname;
   private LocalDate joinDate;
   private String email;
-
+  private LoginType loginType;
 }

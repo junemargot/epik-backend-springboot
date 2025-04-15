@@ -20,9 +20,6 @@ import java.util.List;
 
 public class JwtAuthenticationFilter_v2 extends OncePerRequestFilter {
 
-//    @Getter
-//    @Value("rland.jwt.secret")
-//    private String secret;
     private final JwtUtil jwtUtil;
 
     public JwtAuthenticationFilter_v2(JwtUtil jwtUtil) {
@@ -30,36 +27,27 @@ public class JwtAuthenticationFilter_v2 extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         // 쿠키에서 JWT 토큰을 추출
         String token = null;
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (cookie.getName().equals("jwt_token")) {
+        if(request.getCookies() != null) {
+            for(Cookie cookie : request.getCookies()) {
+                if("jwt_token".equals(cookie.getName())) {
                     token = cookie.getValue();
-                    System.out.println("쿠키 겟차");
                     break;
                 }
             }
-        }else
-            System.out.println("쿠키 없다 ㅜㅜ");
+        }
 
-        // JWT 토큰이 존재하고 유효하다면
-        if (token != null && jwtUtil.validateToken(token)) {
+        // JWT 토큰이 존재하고 유효하면 사용자 인증 정보 설정
+        if(token != null && jwtUtil.validateToken(token)) {
             String username = jwtUtil.extractUsername(token);
-            System.out.println(username); // 토큰 확인용 코트
-            String email = jwtUtil.extractEmail(token); // 토큰 확인용 코드
-            System.out.println(email); // 토큰 확인용 코트
             List<String> roles = jwtUtil.extractRoles(token);
 
-            // 인증 정보를 담는다
-            if (username != null && !username.isEmpty()) {
-                // 사용자 정보와 역할(role)을 가져와서 인증 객체를 생성
+            if(username != null && !username.isEmpty()) {
                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                for (String role : roles) {
+                for(String role : roles) {
                     authorities.add(new SimpleGrantedAuthority(role));
                 }
 
@@ -76,10 +64,10 @@ public class JwtAuthenticationFilter_v2 extends OncePerRequestFilter {
             }
         }
 
-        // 필터 체인 계속 진행
-        filterChain.doFilter(request, response); // 다음 필터에게 전달
+        // 다음 필터 체인으로 요청 전달
+        filterChain.doFilter(request, response);
     }
-    }
+}
 
 
 

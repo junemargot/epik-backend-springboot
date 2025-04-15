@@ -54,6 +54,7 @@ public class DefaultMemberService implements MemberService {
 
               // loginType은 이미 Enum으로 저장되어 있기 때문에 별도 변환없이 그대로 설정됨
               // JPA가 자동으로 Enum을 처리하기 때문에 따로 변환 작업이 필요 없다.
+              memberResponseDto.setLoginType(member.getLoginType());
               return memberResponseDto;
             })
             .collect(Collectors.toList());
@@ -88,6 +89,7 @@ public class DefaultMemberService implements MemberService {
             .stream()
             .map(member -> {
               MemberDto memberDto = modelMapper.map(member, MemberDto.class);
+              memberDto.setLoginType(member.getLoginType());
 //              MemberDto memberDto = new MemberDto();
 //              memberDto.setJoinDate(member.getJoinDate());
               return memberDto;

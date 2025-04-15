@@ -83,10 +83,7 @@ public class SecurityConfig {
 
             // H2 콘솔을 위한 설정
             .headers(headers ->
-                    headers.frameOptions(frameOptions ->
-                            frameOptions.sameOrigin()
-                    )
-            );
+                    headers.frameOptions(frameOptions -> frameOptions.sameOrigin()));
 
     // 아래 코드에서 @Bean으로 등록new JwtAuthenticationFilter_v2(jwtUtil)
     // JwtAuthenticationFilter에서 정의한 내용(토큰 유효성 확인) 사용
@@ -115,13 +112,4 @@ public class SecurityConfig {
 
     return source;
   }
-
-  // UserDetails -> UserDetailsService
-    /*
-    1. 메모리 유저
-    2. JdBC 유저
-    3. X.500 유저
-
-     */
-
 }
