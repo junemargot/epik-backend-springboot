@@ -34,17 +34,21 @@ public class JwtAuthenticationFilter_v2 extends OncePerRequestFilter {
         // 쿠키에서 JWT 토큰 추출
         String token = extractTokenFromCookie(request);
 
+        // 토큰이 존재하고, 일단 null이 아니면 검증 시도
         if (token != null || jwtUtil.validateToken(token)) {
             try {
+                // 토큰에서 필요한 정보 추출
                 String username = jwtUtil.extractUsername(token);
                 Long id = jwtUtil.extractId(token);
                 String email = jwtUtil.extractEmail(token);
                 List<String> roles = jwtUtil.extractRoles(token);
 
+                // roles 리스트를 SimpleGrantedAuthority로 변환
                 List<SimpleGrantedAuthority> authorities = roles.stream()
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
+                // EpikUserDetails 객체 생성
                 UserDetails userDetails = EpikUserDetails.builder()
                         .id(id)
                         .username(username)
@@ -52,6 +56,7 @@ public class JwtAuthenticationFilter_v2 extends OncePerRequestFilter {
                         .authorities(authorities)
                         .build();
 
+                // Spring Security 인증 토큰 생성 및 SecurityContext 설정
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
@@ -65,34 +70,12 @@ public class JwtAuthenticationFilter_v2 extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
 
     }
-//        // JWT 토큰이 존재하고 유효하면 사용자 인증 정보 설정
-//        if(token != null && jwtUtil.validateToken(token)) {
-//            String username = jwtUtil.extractUsername(token);
-//            List<String> roles = jwtUtil.extractRoles(token);
-//
-//            if(username != null && !username.isEmpty()) {
-//                List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//                for(String role : roles) {
-//                    authorities.add(new SimpleGrantedAuthority(role));
-//                }
-//
-//                UserDetails userDetails = EpikUserDetails.builder()
-//                        .username(username)
-//                        .authorities(authorities)
-//                        .build();
-//
-//                // 인증된 사용자 정보를 Spring Security의 SecurityContext에 설정
-//                UsernamePasswordAuthenticationToken authenticationToken =
-//                        new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
-//                authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-//            }
-//        }
-//
-//        // 다음 필터 체인으로 요청 전달
-//        filterChain.doFilter(request, response);
-//    }
 
+    /**
+     * 쿠키에서 "jwt_token"이라는 이름을 가진 쿠키의 값을 찾아 반환.
+     * @param request HttpServletRequest
+     * @return jwt_token 값 또는 null
+     */
     private String extractTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if(cookies != null) {
