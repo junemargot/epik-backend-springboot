@@ -15,10 +15,16 @@ public enum LoginType {
   public String getDescription() {
     return description;
   }
+
+  // 문자열에서 LoginType으로 변환
+  public static LoginType fromString(String provider) {
+    if(provider == null) return ID;
+
+    switch(provider.toLowerCase()) {
+      case "kakao": return KAKAO;
+      case "google": return GOOGLE;
+      case "naver": return NAVER;
+      default: return ID;
+    }
+  }
 }
-
-
-//ID("아이디"),      // 0
-//NAVER("네이버"),   // 1
-//KAKAO("카카오"),   // 2
-//GOOGLE("구글");   // 3

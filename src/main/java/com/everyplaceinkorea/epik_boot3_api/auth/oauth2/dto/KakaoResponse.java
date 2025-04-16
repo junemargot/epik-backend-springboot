@@ -25,13 +25,23 @@ public class KakaoResponse implements OAuth2Response {
   @Override
   public String getEmail() {
     Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+    if(kakaoAccount == null || kakaoAccount.get("email") == null) {
+      return "";
+    }
     return kakaoAccount.get("email").toString();
   }
 
   @Override
   public String getName() {
-    Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
-    return properties.get("nickname").toString();
+    Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("properties");
+    if(kakaoAccount == null) return "";
+
+    Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
+    if(profile == null || profile.get("nickname") == null) {
+      return "";
+    }
+
+    return profile.get("nickname").toString();
   }
 
   @Override
@@ -39,18 +49,15 @@ public class KakaoResponse implements OAuth2Response {
     // 프로필 이미지는 선택 동의 항목이므로, 동의하지 않았을 경우 처리
     Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
     if(kakaoAccount == null) {
-      return null;
+      return getDefaultProfileImage();
     }
 
     Map<String, Object> profile = (Map<String, Object>) kakaoAccount.get("profile");
-    if(profile == null) {
-      return null;
+    if(profile == null || profile.get("profile_image_url") == null) {
+      return getDefaultProfileImage();
     }
 
-    // 프로필 이미지 동의 여부 확인
-
-    return null;
-
+    return profile.get("profile_image_url").toString();
   }
 
   // 기본 프로필 이미지 URL 반환

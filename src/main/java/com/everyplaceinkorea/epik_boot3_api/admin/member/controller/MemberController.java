@@ -41,7 +41,6 @@ public class MemberController {
   public ResponseEntity<MemberResponseDto> getMemberById(@PathVariable Long id) {
     try {
       MemberResponseDto member = memberService.getMemberById(id);
-      System.out.println("프로필 이미지: " + member.getProfileImg());
 
       return ResponseEntity.ok(member);
 

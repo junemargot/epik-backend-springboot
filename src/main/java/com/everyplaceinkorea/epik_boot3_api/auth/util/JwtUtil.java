@@ -53,9 +53,6 @@ public class JwtUtil {
         return roleNames;
     }
 
-
-
-
     public Long extractId(String token) {
         return extractAllClaims(token).get("id", Long.class);
     }

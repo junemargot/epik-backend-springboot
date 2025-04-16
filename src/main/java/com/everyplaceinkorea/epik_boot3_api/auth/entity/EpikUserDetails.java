@@ -15,7 +15,6 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class EpikUserDetails implements UserDetails, OAuth2User {
 
     private Long id;
@@ -25,6 +24,7 @@ public class EpikUserDetails implements UserDetails, OAuth2User {
     private String nickname;
     private String profileImage;
     private Collection<? extends GrantedAuthority> authorities; // *
+    private Map<String, Object> attributes;
 
     @Override
     public String getName() {
@@ -35,4 +35,20 @@ public class EpikUserDetails implements UserDetails, OAuth2User {
     public Map<String, Object> getAttributes() {
         return Map.of();
     }
+
+    // 빌더 패턴에서 attributes가 null일 경우 빈 맵으로 초기화하는 정적 메서드
+//    public static EpikUserDetails builder() {
+//        return new CustomEpikUserDetailsBuilder();
+//    }
+
+//    private static class CustomEpikUserDetailsBuilder extends EpikUserDetails {
+//
+//        public EpikUserDetails build() {
+//            EpikUserDetails userDetails = super.build();
+//            if (userDetails.getAttributes() == null) {
+//                userDetails.setAttributes(Map.of());
+//            }
+//            return userDetails;
+//        }
+//    }
 }

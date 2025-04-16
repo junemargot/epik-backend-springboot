@@ -72,5 +72,12 @@ public class Member {
 
         return this;
     }
+
+    public Member updateProfile(String name, String profileIamge) {
+        this.nickname = name;
+        this.profileImg = profileIamge;
+
+        return this;
+    }
 }
 

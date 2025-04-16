@@ -400,21 +400,4 @@ public class AuthController {
                 .build();
     }
 
-    @GetMapping("/proxy/image")
-    public ResponseEntity<byte[]> proxyImage(@RequestParam("url") String imageUrl) {
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<byte[]> response = restTemplate.getForEntity(imageUrl, byte[].class);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG);
-
-            return new ResponseEntity<>(response.getBody(), headers, HttpStatus.OK);
-
-        } catch(Exception e) {
-            log.error("이미지 프록시 오류: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
 }
