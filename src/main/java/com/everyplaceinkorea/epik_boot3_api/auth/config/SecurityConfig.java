@@ -4,7 +4,6 @@ import com.everyplaceinkorea.epik_boot3_api.auth.filter.JwtAuthenticationFilter_
 import com.everyplaceinkorea.epik_boot3_api.auth.handler.OAuth2AuthenticationSuccessHandler;
 import com.everyplaceinkorea.epik_boot3_api.auth.handler.OAuth2LogoutSuccessHandler;
 import com.everyplaceinkorea.epik_boot3_api.auth.service.CustomOAuth2UserService;
-import com.everyplaceinkorea.epik_boot3_api.auth.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,7 +57,8 @@ public class SecurityConfig {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // 요청 권한 설정
             .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/api/v1/auth/**", "/oauth/**", "/login/**", "/images/**").permitAll()
+                    .requestMatchers("/api/v1/auth/**", "/login/**", "/images/**",
+                                    "/oauth2/**", "/oauth2/authorization/**", "/login/oauth2/code/**").permitAll()
                     .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .anyRequest().permitAll()

@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -18,37 +19,41 @@ import java.util.Map;
 public class EpikUserDetails implements UserDetails, OAuth2User {
 
     private Long id;
+    private String name;
     private String username;
     private String password;
     private String email;
     private String nickname;
     private String profileImage;
-    private Collection<? extends GrantedAuthority> authorities; // *
-    private Map<String, Object> attributes;
+    private Collection<? extends GrantedAuthority> authorities; // 사용자 권한 목록
+    private Map<String, Object> attributes; // OAuth2 제공자로부터 받은 원본 속성
 
     @Override
     public String getName() {
-        return "";
+        return this.username != null ? this.username : String.valueOf(this.id);
     }
 
+    // 계정 만료 여부
     @Override
-    public Map<String, Object> getAttributes() {
-        return Map.of();
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    // 빌더 패턴에서 attributes가 null일 경우 빈 맵으로 초기화하는 정적 메서드
-//    public static EpikUserDetails builder() {
-//        return new CustomEpikUserDetailsBuilder();
-//    }
+    // 계정 잠김 여부
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
 
-//    private static class CustomEpikUserDetailsBuilder extends EpikUserDetails {
-//
-//        public EpikUserDetails build() {
-//            EpikUserDetails userDetails = super.build();
-//            if (userDetails.getAttributes() == null) {
-//                userDetails.setAttributes(Map.of());
-//            }
-//            return userDetails;
-//        }
-//    }
+    // 인증 만료 여부
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    // 계정 활성화 여부
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }

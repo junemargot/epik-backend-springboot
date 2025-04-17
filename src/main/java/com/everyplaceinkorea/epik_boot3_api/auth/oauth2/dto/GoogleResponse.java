@@ -1,7 +1,10 @@
 package com.everyplaceinkorea.epik_boot3_api.auth.oauth2.dto;
 
 import java.util.Map;
-
+/**
+ * 구글 OAuth2 응답을 처리하는 구현체
+ * 구글 API의 응답 형식에 맞게 데이터를 추출하여 표준화된 인터페이스로 제공
+ */
 public class GoogleResponse implements OAuth2Response {
 
   private final Map<String, Object> attributes;
