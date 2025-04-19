@@ -29,6 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -72,6 +73,15 @@ public class AuthController {
 
             // 4. 인증에 성공하면, 인증 정보를 담은 Principal 객체(EpikUserDetails)를 획득
             EpikUserDetails userDetails = (EpikUserDetails) authentication.getPrincipal();
+
+            // 4-2. 최근 접속일 업데이트 로직 추가
+            Optional<Member> memberOptional = memberRepository.findByUsername(username);
+            if(memberOptional.isPresent()) {
+                Member member = memberOptional.get();
+                member.setLastAccess(LocalDateTime.now());
+                memberRepository.save(member);
+                log.info("사용자 {} 최근 접속일 업데이트 완료: ", username);
+            }
 
             // 5. JWT 유틸리티를 사용해 사용자 정보를 기반으로 JWT 토큰 생성
             String token = jwtUtil.generateToken(userDetails);
@@ -182,6 +192,7 @@ public class AuthController {
             member.setNickname(name);
             member.setEmail(email);
             member.setProfileImg(profileImage); // 추가
+            member.setLastAccess(LocalDateTime.now());
             member.setJoinDate(LocalDate.now());
             member.setType((byte) 1);  // 임의의 타입 값
             member.setRole("ROLE_MEMBER");
@@ -199,6 +210,9 @@ public class AuthController {
                 log.debug("기존 회원 프로필 이미지 업데이트: {}", finalProfileImage);
                 memberRepository.save(member);
             }
+
+            member.setLastAccess(LocalDateTime.now());
+            memberRepository.save(member);
         }
 
         // 5. JWT 토큰 생성을 위해 EpikUserDetails 객체 생성 (인증 정보 객체)

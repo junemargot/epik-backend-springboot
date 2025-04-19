@@ -55,6 +55,11 @@ public class DefaultMemberService implements MemberService {
               // loginType은 이미 Enum으로 저장되어 있기 때문에 별도 변환없이 그대로 설정됨
               // JPA가 자동으로 Enum을 처리하기 때문에 따로 변환 작업이 필요 없다.
               memberResponseDto.setLoginType(member.getLoginType());
+
+              if(member.getLastAccess() != null) {
+                memberResponseDto.setLastAccess(member.getLastAccess());
+              }
+
               return memberResponseDto;
             })
             .collect(Collectors.toList());
@@ -90,6 +95,10 @@ public class DefaultMemberService implements MemberService {
             .map(member -> {
               MemberDto memberDto = modelMapper.map(member, MemberDto.class);
               memberDto.setLoginType(member.getLoginType());
+
+              if(member.getLastAccess() != null) {
+                memberDto.setLastAccess(member.getLastAccess());
+              }
 //              MemberDto memberDto = new MemberDto();
 //              memberDto.setJoinDate(member.getJoinDate());
               return memberDto;
@@ -123,6 +132,11 @@ public class DefaultMemberService implements MemberService {
 
     // loginType을 enum으로 설정(JPA에서 자동으로 Enum 타입으로 처리되므로 그대로 사용한다.)
     memberResponseDto.setLoginType(member.getLoginType());
+
+    // 최근 접속일 설정 (null 체크 추가)
+    if (member.getLastAccess() != null) {
+      memberResponseDto.setLastAccess(member.getLastAccess());
+    }
 
     return memberResponseDto;
 //    return modelMapper.map(member, MemberResponseDto.class);

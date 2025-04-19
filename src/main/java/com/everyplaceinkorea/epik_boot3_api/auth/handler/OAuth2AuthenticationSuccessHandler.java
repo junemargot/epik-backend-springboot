@@ -2,6 +2,8 @@ package com.everyplaceinkorea.epik_boot3_api.auth.handler;
 
 import com.everyplaceinkorea.epik_boot3_api.auth.entity.EpikUserDetails;
 import com.everyplaceinkorea.epik_boot3_api.auth.util.JwtUtil;
+import com.everyplaceinkorea.epik_boot3_api.entity.member.Member;
+import com.everyplaceinkorea.epik_boot3_api.repository.Member.MemberRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +16,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 
 @Component
@@ -22,12 +26,43 @@ import java.io.IOException;
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
   private final JwtUtil jwtUtil;
+  private final MemberRepository memberRepository;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
     log.info("OAuth2 로그인 성공");
     EpikUserDetails userDetails = (EpikUserDetails) authentication.getPrincipal();
+
+    // 최근 접속일 업데이트 로직 추가
+    try {
+      String username = userDetails.getUsername();
+      String email = userDetails.getEmail();
+
+      // 이메일로 회원 찾기 (소셜 로그인은 주로 이메일로 식별)
+      Optional<Member> memberOptional = memberRepository.findByEmail(email);
+      if (memberOptional.isPresent()) {
+        Member member = memberOptional.get();
+        // 최근 접속일 업데이트
+        member.setLastAccess(LocalDateTime.now());
+        memberRepository.save(member);
+        log.info("소셜 로그인 사용자 {} 최근 접속일 업데이트 완료", email);
+      } else {
+        // 혹시 이메일로 찾지 못하면 username으로 시도
+        memberOptional = memberRepository.findByUsername(username);
+        if (memberOptional.isPresent()) {
+          Member member = memberOptional.get();
+          member.setLastAccess(LocalDateTime.now());
+          memberRepository.save(member);
+          log.info("소셜 로그인 사용자 {} 최근 접속일 업데이트 완료", username);
+        } else {
+          log.warn("소셜 로그인 사용자를 찾을 수 없음: {}", email);
+        }
+      }
+    } catch (Exception e) {
+      // 최근 접속일 업데이트 실패해도 로그인 프로세스는 계속 진행
+      log.error("최근 접속일 업데이트 중 오류 발생", e);
+    }
 
     // JWT 토큰 생성
     String token = jwtUtil.generateToken(userDetails);

@@ -20,6 +20,7 @@ public class MemberDto {
   private String username; // id
   private String nickname;
   private LocalDate joinDate;
+  private LocalDateTime lastAccess;
   private String email;
   private LoginType loginType;
 }
