@@ -43,3 +43,4 @@ mvnw
 mvnw.cmd
 .env
 pom.xml
+/src/main/resources/application.yml
