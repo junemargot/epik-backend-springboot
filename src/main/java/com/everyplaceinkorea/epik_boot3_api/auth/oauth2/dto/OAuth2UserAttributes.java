@@ -25,19 +25,22 @@ public class OAuth2UserAttributes {
   private String name;
   private String email;
   private String profileImage;
+  private String registrationId;
 
   @Builder
   public OAuth2UserAttributes(Map<String, Object> attributes,
                               String nameAttributeKey,
                               String name,
                               String email,
-                              String profileImage) {
+                              String profileImage,
+                              String registrationId) {
 
     this.attributes = attributes;
     this.nameAttributeKey = nameAttributeKey;
     this.name = name;
     this.email = email;
     this.profileImage = profileImage;
+    this.registrationId = registrationId;
   }
 
   /**
@@ -67,6 +70,7 @@ public class OAuth2UserAttributes {
             .profileImage((String) attributes.get("picture"))
             .attributes(attributes)
             .nameAttributeKey(userNameAttributeName)
+            .registrationId(registrationId)
             .build();
   }
 
@@ -83,6 +87,7 @@ public class OAuth2UserAttributes {
             .profileImage((String) kakaoProfile.get("profile_image_url"))
             .attributes(attributes)
             .nameAttributeKey(userNameAttributeName)
+            .registrationId("kakao")
             .build();
   }
 
@@ -93,6 +98,7 @@ public class OAuth2UserAttributes {
             .profileImage((String) attributes.get("picture"))
             .attributes(attributes)
             .nameAttributeKey(userNameAttributeName)
+            .registrationId("google")
             .build();
   }
 
@@ -102,11 +108,12 @@ public class OAuth2UserAttributes {
     Map<String, Object> response = (Map<String, Object>) attributes.get("response");
 
     return OAuth2UserAttributes.builder()
-            .name((String) response.get("name"))
+            .name((String) response.get("nickname"))
             .email((String) response.get("email"))
             .profileImage((String) response.get("profile_image"))
             .attributes(attributes)
             .nameAttributeKey(userNameAttributeName)
+            .registrationId("naver")
             .build();
   }
 
@@ -122,11 +129,11 @@ public class OAuth2UserAttributes {
     member.setType((byte) 1);
     member.setRole("ROLE_MEMBER");
 
-    if(attributes.containsKey("sub")) {
+    if("google".equalsIgnoreCase(registrationId)) {
       member.setLoginType(LoginType.GOOGLE);
-    } else if(attributes.containsKey("id") && attributes.get("id").toString().length() > 10) {
+    } else if("kakao".equalsIgnoreCase(registrationId)) {
       member.setLoginType(LoginType.KAKAO);
-    } else {
+    } else if("naver".equalsIgnoreCase(registrationId)) {
       member.setLoginType(LoginType.NAVER);
     }
 

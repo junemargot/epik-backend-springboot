@@ -1,9 +1,6 @@
 package com.everyplaceinkorea.epik_boot3_api.auth.service;
 
 import com.everyplaceinkorea.epik_boot3_api.auth.entity.EpikUserDetails;
-import com.everyplaceinkorea.epik_boot3_api.auth.oauth2.dto.GoogleResponse;
-import com.everyplaceinkorea.epik_boot3_api.auth.oauth2.dto.KakaoResponse;
-import com.everyplaceinkorea.epik_boot3_api.auth.oauth2.dto.OAuth2Response;
 import com.everyplaceinkorea.epik_boot3_api.auth.oauth2.dto.OAuth2UserAttributes;
 import com.everyplaceinkorea.epik_boot3_api.entity.member.LoginType;
 import com.everyplaceinkorea.epik_boot3_api.entity.member.Member;
@@ -14,7 +11,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +42,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     OAuth2UserAttributes attributes = OAuth2UserAttributes.of(
             registrationId,
             userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName(),
-//            userNameAttributeName,
             oAuth2User.getAttributes()
     );
 
@@ -71,7 +66,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
   // 사용자 정보 저장 또는 업데이트
   private Member saveOrUpdate(OAuth2UserAttributes attributes, String registrationId) {
-    LoginType loginType = "google".equals(registrationId) ? LoginType.GOOGLE : LoginType.KAKAO;
+    LoginType loginType;
+    if("google".equalsIgnoreCase(registrationId)) {
+      loginType = LoginType.GOOGLE;
+    } else if("kakao".equalsIgnoreCase(registrationId)) {
+      loginType = LoginType.KAKAO;
+    } else if("naver".equalsIgnoreCase(registrationId)) {
+      loginType = LoginType.NAVER;
+    } else {
+      throw new IllegalArgumentException("Unsupported registrationId: " + registrationId);
+    }
+
     String email = attributes.getEmail();
 
     Optional<Member> memberOptional = memberRepository.findByEmail(email);

@@ -65,9 +65,13 @@ public class SecurityConfig {
             )
 
             // 인증방식 설정
-            .formLogin(Customizer.withDefaults())
+            .formLogin(form -> form
+                    .loginPage("/login")
+                    .permitAll()
+            )
             // OAuth2 로그인 설정
             .oauth2Login(oauth2 -> oauth2
+                    .loginPage("/login")
                     .userInfoEndpoint(userInfo -> userInfo
                             .userService(customOAuth2UserService)
                     ).successHandler(oAuth2AuthenticationSuccessHandler)
