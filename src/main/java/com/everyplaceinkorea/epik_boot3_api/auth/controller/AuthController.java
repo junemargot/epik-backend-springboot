@@ -137,115 +137,115 @@ public class AuthController {
      * @param request  HttpServletRequest 객체
      * @return AuthResponseDto 형태로 회원 ID와 JWT 토큰 반환
      */
-    @PostMapping("google-login")
-//    @PostMapping("/login/google")
-    public ResponseEntity<?> googleLogin(@RequestBody GoogleRequestDto googleRequestDto, HttpServletResponse response, HttpServletRequest request) {
-
-        // 1. 구글 계정 정보 추출 (email, id, name)
-        String email = googleRequestDto.getEmail();
-        String id = googleRequestDto.getId();
-        String name = googleRequestDto.getName();
-        String profileImage = googleRequestDto.getPicture(); // 추가
-
-        log.info("구글 로그인 시도: 사용자 정보 수신");
-        log.debug("구글 계정 정보 - 이메일: {}, 이름: {}, 프로필 이미지: {}", email, name, profileImage);
-
-        // 요청 데이터 확인
-        log.info("구글 요청 데이터: {}", googleRequestDto);
-
-        // HTTP URL을 HTTPS로 변환
-        if(profileImage != null && profileImage.startsWith("http://")) {
-            profileImage = profileImage.replace("http://", "https://");
-            log.debug("HTTP URL을 HTTPS로 변환: {}", profileImage);
-        }
-
-        // 프로필 이미지가 없는 경우 기본 이미지 설정
-        if(profileImage == null || profileImage.isEmpty()) {
-            profileImage = "basic.png"; // 기본 이미지 파일명
-            log.debug("기본 프로필 이미지 사용");
-        } else {
-            log.info("구글 프로필 이미지 사용: {}", profileImage);
-        }
-
-        final String finalProfileImage = profileImage;
-
-        // 2. 임의의 단기 식별자를 생성하기 위해 4자리 랜덤 숫자 생성
-        StringBuilder randomNumbers = new StringBuilder();
-        Random random = new Random();
-        for (int i = 0; i < 4; i++) {
-            int randomDigit = random.nextInt(10);  // 0부터 9까지의 랜덤 숫자
-            randomNumbers.append(randomDigit);
-        }
-        Long shortId = Long.parseLong(randomNumbers.toString());
-        System.out.println("정리된 구글 정보 확인(shortId)- " + email + shortId + name);
-        List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
-
-        // 3. 기존에 해당 이메일로 등록된 회원이 있는지 체크
-        Optional<Member> memberOptional = memberRepository.findByEmail(email);
-
-        // 4. 회원이 없으면 신규 가입 처리
-        Member member = new Member();
-        if (memberOptional.isEmpty()) {
-            log.info("신규 구글 회원가입: {}", email);
-            member.setId(shortId);
-            member.setUsername(email);
-            member.setNickname(name);
-            member.setEmail(email);
-            member.setProfileImg(profileImage); // 추가
-            member.setLastAccess(LocalDateTime.now());
-            member.setJoinDate(LocalDate.now());
-            member.setType((byte) 1);  // 임의의 타입 값
-            member.setRole("ROLE_MEMBER");
-            member.setLoginType(LoginType.GOOGLE);
-            memberRepository.save(member);
-            log.info("구글 회원가입 완료: {}", email);
-
-        } else {
-            log.info("기존 구글 회원 로그인: {}", email);
-            member = memberOptional.get();
-
-            // 프로필 이미지 업데이트
-            if(finalProfileImage != null && !finalProfileImage.equals("basic.png")) {
-                member.setProfileImg(finalProfileImage);
-                log.debug("기존 회원 프로필 이미지 업데이트: {}", finalProfileImage);
-                memberRepository.save(member);
-            }
-
-            member.setLastAccess(LocalDateTime.now());
-            memberRepository.save(member);
-        }
-
-        // 5. JWT 토큰 생성을 위해 EpikUserDetails 객체 생성 (인증 정보 객체)
-        EpikUserDetails userDetails = EpikUserDetails.builder()
-                .id(member.getId())
-                .username(member.getUsername())
-                .email(member.getEmail())
-                .nickname(member.getNickname())
-                .profileImage(member.getProfileImg())
-                .authorities(Collections.singletonList(new SimpleGrantedAuthority(member.getRole())))
-                .build();
-
-        // 6. JWT 유틸리티를 사용하여 토큰 생성
-        String token = jwtUtil.generateToken(userDetails);
-        System.out.println("토큰출력-" + token);
-
-        // 7. 생성된 토큰을 쿠키에 저장 (HTTP 전용)
-        Cookie cookie = new Cookie("jwt_token", token);
-        cookie.setHttpOnly(true);       // JavaScript에서 접근할 수 없도록 설정
-        cookie.setSecure(true);         // HTTPS에서만 전송하도록 설정
-        cookie.setPath("/");            // 쿠키가 모든 경로에서 유효하도록 설정
-        cookie.setMaxAge(60 * 60 * 24); // 1일 동안 쿠키 유지
-        response.addCookie(cookie);
-
-        // 8. GoogleResponseDto 생성 후, JWT 토큰과 함께 반환
-        GoogleResponseDto responseDto = GoogleResponseDto
-                .builder()
-                .memberId(userDetails.getId())
-                .token(token)
-                .build();
-
-        return ResponseEntity.ok(responseDto);
-    }
+//    @PostMapping("google-login")
+////    @PostMapping("/login/google")
+//    public ResponseEntity<?> googleLogin(@RequestBody GoogleRequestDto googleRequestDto, HttpServletResponse response, HttpServletRequest request) {
+//
+//        // 1. 구글 계정 정보 추출 (email, id, name)
+//        String email = googleRequestDto.getEmail();
+//        String id = googleRequestDto.getId();
+//        String name = googleRequestDto.getName();
+//        String profileImage = googleRequestDto.getPicture(); // 추가
+//
+//        log.info("구글 로그인 시도: 사용자 정보 수신");
+//        log.debug("구글 계정 정보 - 이메일: {}, 이름: {}, 프로필 이미지: {}", email, name, profileImage);
+//
+//        // 요청 데이터 확인
+//        log.info("구글 요청 데이터: {}", googleRequestDto);
+//
+//        // HTTP URL을 HTTPS로 변환
+//        if(profileImage != null && profileImage.startsWith("http://")) {
+//            profileImage = profileImage.replace("http://", "https://");
+//            log.debug("HTTP URL을 HTTPS로 변환: {}", profileImage);
+//        }
+//
+//        // 프로필 이미지가 없는 경우 기본 이미지 설정
+//        if(profileImage == null || profileImage.isEmpty()) {
+//            profileImage = "basic.png"; // 기본 이미지 파일명
+//            log.debug("기본 프로필 이미지 사용");
+//        } else {
+//            log.info("구글 프로필 이미지 사용: {}", profileImage);
+//        }
+//
+//        final String finalProfileImage = profileImage;
+//
+//        // 2. 임의의 단기 식별자를 생성하기 위해 4자리 랜덤 숫자 생성
+//        StringBuilder randomNumbers = new StringBuilder();
+//        Random random = new Random();
+//        for (int i = 0; i < 4; i++) {
+//            int randomDigit = random.nextInt(10);  // 0부터 9까지의 랜덤 숫자
+//            randomNumbers.append(randomDigit);
+//        }
+//        Long shortId = Long.parseLong(randomNumbers.toString());
+//        System.out.println("정리된 구글 정보 확인(shortId)- " + email + shortId + name);
+//        List<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+//
+//        // 3. 기존에 해당 이메일로 등록된 회원이 있는지 체크
+//        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+//
+//        // 4. 회원이 없으면 신규 가입 처리
+//        Member member = new Member();
+//        if (memberOptional.isEmpty()) {
+//            log.info("신규 구글 회원가입: {}", email);
+//            member.setId(shortId);
+//            member.setUsername(email);
+//            member.setNickname(name);
+//            member.setEmail(email);
+//            member.setProfileImg(profileImage); // 추가
+//            member.setLastAccess(LocalDateTime.now());
+//            member.setJoinDate(LocalDate.now());
+//            member.setType((byte) 1);  // 임의의 타입 값
+//            member.setRole("ROLE_MEMBER");
+//            member.setLoginType(LoginType.GOOGLE);
+//            memberRepository.save(member);
+//            log.info("구글 회원가입 완료: {}", email);
+//
+//        } else {
+//            log.info("기존 구글 회원 로그인: {}", email);
+//            member = memberOptional.get();
+//
+//            // 프로필 이미지 업데이트
+//            if(finalProfileImage != null && !finalProfileImage.equals("basic.png")) {
+//                member.setProfileImg(finalProfileImage);
+//                log.debug("기존 회원 프로필 이미지 업데이트: {}", finalProfileImage);
+//                memberRepository.save(member);
+//            }
+//
+//            member.setLastAccess(LocalDateTime.now());
+//            memberRepository.save(member);
+//        }
+//
+//        // 5. JWT 토큰 생성을 위해 EpikUserDetails 객체 생성 (인증 정보 객체)
+//        EpikUserDetails userDetails = EpikUserDetails.builder()
+//                .id(member.getId())
+//                .username(member.getUsername())
+//                .email(member.getEmail())
+//                .nickname(member.getNickname())
+//                .profileImage(member.getProfileImg())
+//                .authorities(Collections.singletonList(new SimpleGrantedAuthority(member.getRole())))
+//                .build();
+//
+//        // 6. JWT 유틸리티를 사용하여 토큰 생성
+//        String token = jwtUtil.generateToken(userDetails);
+//        System.out.println("토큰출력-" + token);
+//
+//        // 7. 생성된 토큰을 쿠키에 저장 (HTTP 전용)
+//        Cookie cookie = new Cookie("jwt_token", token);
+//        cookie.setHttpOnly(true);       // JavaScript에서 접근할 수 없도록 설정
+//        cookie.setSecure(true);         // HTTPS에서만 전송하도록 설정
+//        cookie.setPath("/");            // 쿠키가 모든 경로에서 유효하도록 설정
+//        cookie.setMaxAge(60 * 60 * 24); // 1일 동안 쿠키 유지
+//        response.addCookie(cookie);
+//
+//        // 8. GoogleResponseDto 생성 후, JWT 토큰과 함께 반환
+//        GoogleResponseDto responseDto = GoogleResponseDto
+//                .builder()
+//                .memberId(userDetails.getId())
+//                .token(token)
+//                .build();
+//
+//        return ResponseEntity.ok(responseDto);
+//    }
 
     /**
      * 카카오 로그인 API (Kakao OAuth 2.0 로그인 기능)

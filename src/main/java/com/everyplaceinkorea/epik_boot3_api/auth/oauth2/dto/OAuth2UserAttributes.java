@@ -83,7 +83,7 @@ public class OAuth2UserAttributes {
 
     return OAuth2UserAttributes.builder()
             .name((String) kakaoProfile.get("nickname"))
-            .email((String) kakaoAccount.get("email")) // d여기..?
+            .email((String) kakaoAccount.get("email"))
             .profileImage((String) kakaoProfile.get("profile_image_url"))
             .attributes(attributes)
             .nameAttributeKey(userNameAttributeName)
