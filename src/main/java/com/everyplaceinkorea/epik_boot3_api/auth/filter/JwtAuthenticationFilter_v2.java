@@ -35,9 +35,15 @@ public class JwtAuthenticationFilter_v2 extends OncePerRequestFilter {
         String token = extractTokenFromCookie(request);
 
         // 토큰이 존재하고, 일단 null이 아니면 검증 시도
-        if (token != null || jwtUtil.validateToken(token)) {
-            try {
-                // 토큰에서 필요한 정보 추출
+        if (token != null || token.isEmpty()) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        try {
+            // 토큰이 있으면 유효성 검증 후 인증 설정
+            if (jwtUtil.validateToken(token)) {
+
                 String username = jwtUtil.extractUsername(token);
                 Long id = jwtUtil.extractId(token);
                 String email = jwtUtil.extractEmail(token);
@@ -61,14 +67,13 @@ public class JwtAuthenticationFilter_v2 extends OncePerRequestFilter {
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            } catch (Exception e) {
-                log.error("JWT 토큰 검증 중 오류 발생: {}", e.getMessage());
             }
+        } catch (Exception e) {
+            log.error("JWT 토큰 검증 중 오류 발생: {}", e.getMessage());
+            // 검증에 실패하면 그냥 인증 없이 넘어감 Anonymous 상태로 남음
         }
 
         filterChain.doFilter(request, response);
-
     }
 
     /**
@@ -76,11 +81,11 @@ public class JwtAuthenticationFilter_v2 extends OncePerRequestFilter {
      * @param request HttpServletRequest
      * @return jwt_token 값 또는 null
      */
-    private String extractTokenFromCookie(HttpServletRequest request) {
+    private String extractTokenFromCookie(HttpServletRequest request){
         Cookie[] cookies = request.getCookies();
-        if(cookies != null) {
-            for(Cookie cookie : cookies) {
-                if("jwt_token".equals(cookie.getName())) {
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("jwt_token".equals(cookie.getName())) {
                     return cookie.getValue();
                 }
             }

@@ -57,7 +57,7 @@ public class SecurityConfig {
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // 요청 권한 설정
             .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/api/v1/auth/**", "/login/**", "/images/**",
+                    .requestMatchers("/api/v1/auth/**", "/login/**", "/images/**", "/uploads/**",
                                     "/oauth2/**", "/oauth2/authorization/**", "/login/oauth2/code/**").permitAll()
                     .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
