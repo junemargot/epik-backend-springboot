@@ -35,7 +35,7 @@ public class JwtAuthenticationFilter_v2 extends OncePerRequestFilter {
         String token = extractTokenFromCookie(request);
 
         // 토큰이 존재하고, 일단 null이 아니면 검증 시도
-        if (token != null || token.isEmpty()) {
+        if (token == null || token.isEmpty()) {
             filterChain.doFilter(request, response);
             return;
         }
