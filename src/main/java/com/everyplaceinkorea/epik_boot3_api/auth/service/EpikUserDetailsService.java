@@ -48,6 +48,7 @@ public class EpikUserDetailsService implements UserDetailsService {
                 .password(member.getPassword())
                 .email(member.getEmail())
                 .nickname(member.getNickname())
+                .profileImage(member.getProfileImg())
                 .authorities(authorities)
                 .build();
     }

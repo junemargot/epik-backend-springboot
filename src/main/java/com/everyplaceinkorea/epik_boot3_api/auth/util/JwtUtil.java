@@ -42,10 +42,12 @@ public class JwtUtil {
     }
 
     public String extractUsername(String token) {
+
         return extractAllClaims(token).getSubject();
     }
 
     public String extractEmail(String token) {
+
         return extractAllClaims(token).get("email", String.class);
     }
 
@@ -110,6 +112,7 @@ public class JwtUtil {
                 .claim("email", epikUserDetails.getEmail())
                 .claim("nickname", epikUserDetails.getNickname())
                 .claim("role", roles)
+                .claim("profileImg", epikUserDetails.getProfileImage())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
 //                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS512)
