@@ -1,6 +1,7 @@
 package com.everyplaceinkorea.epik_boot3_api.anonymous.signup.service;
 
 import com.everyplaceinkorea.epik_boot3_api.anonymous.signup.dto.*;
+import com.everyplaceinkorea.epik_boot3_api.entity.member.LoginType;
 import com.everyplaceinkorea.epik_boot3_api.entity.member.Member;
 import com.everyplaceinkorea.epik_boot3_api.repository.Member.MemberRepository;
 import org.modelmapper.ModelMapper;
@@ -36,12 +37,9 @@ public class DefaultSignupService implements SignupService {
     // 1. username 중복 확인
     @Override
     public UsernameCheckDto usernameCheck(UsernameCheckDto usernameCheckDto) {
-
         UsernameCheckDto dto = new UsernameCheckDto();
 
         String username = usernameCheckDto.getUsername();
-        System.out.println("username-"+username);
-
         Optional<Member> userCheck = memberRepository.findByUsername(username);
 
         if(userCheck.isPresent()) {
@@ -58,17 +56,14 @@ public class DefaultSignupService implements SignupService {
         NicknameCheckDto dto = new NicknameCheckDto();
 
         String nickname = nicknameCheckDto.getNickname();
-        System.out.println("nickname"+nickname);
 
-       Optional<Member> nicknameCheck = memberRepository.findByNickname(nickname);
-        System.out.println(nicknameCheck);
+        Optional<Member> nicknameCheck = memberRepository.findByNickname(nickname);
 
-       if(nicknameCheck.isPresent()) {
-           dto.setNickname(nickname);
-           System.out.println(dto.getNickname());
-       } else {
-           dto.setNickname(null);
-       }
+        if(nicknameCheck.isPresent()) {
+            dto.setNickname(nickname);
+        } else {
+            dto.setNickname(null);
+        }
         return dto;
     }
 
@@ -113,6 +108,7 @@ public class DefaultSignupService implements SignupService {
             int index = random.nextInt(26) + 65;  // 알파벳 대문자
             code.append((char) index);
         }
+
         for (int i = 0; i < 6; i++) {
             int num = random.nextInt(10);  // 숫자 0-9
             code.append(num);
@@ -123,37 +119,31 @@ public class DefaultSignupService implements SignupService {
 
     // 이메일 발송 메서드
     private boolean sendVerificationEmail(String email, String verificationCode) {
+        SimpleMailMessage message = new SimpleMailMessage();
 
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(email);  // 수신 이메일
-            message.setSubject("회원가입 이메일 인증번호");
-            message.setText("회원가입을 위한 인증번호는 " + verificationCode + "입니다.");
-
-            mailSender.send(message);  // 메일 발송
-            return true;
-
+        message.setTo(email);  // 수신 이메일
+        message.setSubject("EPIK 회원가입을 위한 이메일 인증번호");
+        message.setText("회원가입을 위한 인증번호는 " + verificationCode + "입니다.");
+        mailSender.send(message);  // 메일 발송
+        return true;
     }
 
     //4. 회원가입 최종 버튼
     @Override
     public SignupRequestDto signup(SignupRequestDto signupRequestDto) {
-        System.out.println("signupRequestDto == " + signupRequestDto);
         Member member = modelMapper.map(signupRequestDto, Member.class);
-        System.out.println("member == " + member);
         member.setRole("ROLE_MEMBER");
-//        member.setJoinDate(new Timestamp(System.currentTimeMillis()));va
         member.setJoinDate(LocalDate.now());
         member.setType((byte) 1);
         member.setProfileImg("basic.png");
+        member.setLoginType(LoginType.ID);
 
-        //비밀번호 인코딩 //if = pw ===null, if문 추가 필요
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(member.getPassword());
-        member.setPassword(encodedPassword);
 
+        member.setPassword(encodedPassword);
         Member saved = memberRepository.save(member);
-        System.out.println("saved ==" + saved);
-        //가입 타입, 마지막 방문 기록 기능 추가 필요
+
         return modelMapper.map(saved, SignupRequestDto.class);
     }
 }

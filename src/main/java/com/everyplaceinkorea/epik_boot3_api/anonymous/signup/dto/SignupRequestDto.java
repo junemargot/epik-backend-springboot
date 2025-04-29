@@ -14,6 +14,4 @@ public class SignupRequestDto {
     private String email;
     private String profileImg;
     private String profileText;
-
-
 }
