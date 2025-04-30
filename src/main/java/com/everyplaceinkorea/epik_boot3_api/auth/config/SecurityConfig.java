@@ -4,12 +4,12 @@ import com.everyplaceinkorea.epik_boot3_api.auth.filter.JwtAuthenticationFilter_
 import com.everyplaceinkorea.epik_boot3_api.auth.handler.OAuth2AuthenticationSuccessHandler;
 import com.everyplaceinkorea.epik_boot3_api.auth.handler.OAuth2LogoutSuccessHandler;
 import com.everyplaceinkorea.epik_boot3_api.auth.service.CustomOAuth2UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -58,10 +58,19 @@ public class SecurityConfig {
             // 요청 권한 설정
             .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers("/api/v1/auth/**", "/login/**", "/images/**", "/uploads/**", "/api/v1/uploads/**",
-                                    "/oauth2/**", "/oauth2/authorization/**", "/login/oauth2/code/**").permitAll()
-                    .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                                    "/oauth2/**", "/oauth2/authorization/**", "/login/oauth2/code/**",
+                                    "/popup/random", "/concert/random", "/musical/random", "/exhibition/random").permitAll()
+                    .requestMatchers("/api/v1/admin/**").hasAuthority("ROLE_ADMIN")
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .anyRequest().permitAll()
+            )
+
+            .exceptionHandling(exception -> exception
+                    .authenticationEntryPoint((request, response, authException) -> {
+                      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                      response.setContentType("application/json");
+                      response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                    })
             )
 
             // 인증방식 설정
