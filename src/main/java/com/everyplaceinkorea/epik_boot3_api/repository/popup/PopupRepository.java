@@ -2,6 +2,7 @@ package com.everyplaceinkorea.epik_boot3_api.repository.popup;
 
 import com.everyplaceinkorea.epik_boot3_api.entity.musical.Musical;
 import com.everyplaceinkorea.epik_boot3_api.entity.popup.Popup;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -82,5 +83,8 @@ public interface PopupRepository extends JpaRepository<Popup, Long>{
     //epik pick 랜덤이미지조회
     @Query(value = "SELECT m FROM Popup m ORDER BY RAND() LIMIT 10")
     List<Popup> getPopupsByRandom();
+
+    @Query(value = "SELECT * FROM Popup WHERE end_date >= :today ORDER BY RAND() LIMIT 10", nativeQuery = true)
+    List<Popup> findActivePopupByRandom(@Param("today") LocalDate today);
 
 }

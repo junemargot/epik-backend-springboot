@@ -30,7 +30,6 @@ public class DefaultMusicalService implements MusicalService{
         Pageable pageable = PageRequest.of(page - 1, 15, sort);
 
         Page<Musical> musicals = musicalRepository.findMusicalsByRegion(regionId, LocalDate.now(), pageable);
-//        musicals.getContent().forEach(System.out::println);
         List<MusicalResponseDto> responseDtos = musicals
                 .getContent()
                 .stream()
@@ -43,19 +42,14 @@ public class DefaultMusicalService implements MusicalService{
         return responseDtos;
     }
 
+    // 뮤지컬 랜덤 조회
     @Override
     public List<MusicalResponseDto> getMusicalsByRandom() {
-        List<Musical> musicals = musicalRepository.findMusicalByRandom();
-        musicals.forEach(musical -> System.out.println(musical.getTitle()));
+      LocalDate today = LocalDate.now();
+      List<Musical> musicals = musicalRepository.findActiveMusicalByRandom(today);
 
-        List<MusicalResponseDto> responseDtos = musicals
-                .stream()
-                .map(Musical ->{
-                    MusicalResponseDto responseDto = modelMapper.map(Musical, MusicalResponseDto.class);
-                    return responseDto;
-                })
-                .toList();
-
-        return responseDtos;
+      return musicals.stream()
+              .map(musical -> modelMapper.map(musical, MusicalResponseDto.class))
+              .toList();
     }
 }

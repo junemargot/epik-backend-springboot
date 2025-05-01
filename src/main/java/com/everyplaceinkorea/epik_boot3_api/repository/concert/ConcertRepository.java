@@ -36,5 +36,7 @@ public interface ConcertRepository extends JpaRepository<Concert, Long> {
   @Query(value = "SELECT c FROM Concert c ORDER BY RAND() LIMIT 10")
   List<Concert> findConcertByRandom();
 
+  @Query(value = "SELECT * FROM Concert WHERE end_date >= :today ORDER BY RAND() LIMIT 10", nativeQuery = true)
+  List<Concert> findActiveConcertByRandom(@Param("today") LocalDate today);
 
 }

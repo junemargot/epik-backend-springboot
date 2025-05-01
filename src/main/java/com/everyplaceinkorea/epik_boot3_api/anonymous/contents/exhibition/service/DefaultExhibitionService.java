@@ -42,20 +42,16 @@ public class DefaultExhibitionService implements ExhibitionService {
 
         return responseDtos;
     }
+
+    // 전시회 랜덤 조회
     @Override
     public List<ExhibitionResponseDto> getExhibitionsByRandom() {
-        List<Exhibition> exhibitions = exhibitionRepository.findExhibitionByRandom();
-        exhibitions.forEach(Exhibition -> System.out.println(Exhibition.getTitle()));
+      LocalDate today = LocalDate.now();
+      List<Exhibition> exhibitions = exhibitionRepository.findActiveExhibitionByRandom(today);
 
-        List<ExhibitionResponseDto> responseDtos = exhibitions
-                .stream()
-                .map(Exhibition ->{
-                    ExhibitionResponseDto responseDto = modelMapper.map(Exhibition, ExhibitionResponseDto.class);
-                    return responseDto;
-                })
-                .toList();
-
-        return responseDtos;
+      return exhibitions.stream()
+              .map(exhibition -> modelMapper.map(exhibition, ExhibitionResponseDto.class))
+              .toList();
     }
 }
 

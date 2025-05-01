@@ -117,25 +117,22 @@ public class DefaultPopupService implements PopupService {
         return responseDtos;
     }
 
-    //epik pick 랜덤이미지조회
+    // 팝업 랜덤 조회
     @Override
     public List<PopupResponseDto> getPopupsByRandom () {
-        List<Popup> popups = popupRepository.getPopupsByRandom();
-        popups.forEach(popup -> System.out.println(popup.getTitle()));
+      LocalDate today = LocalDate.now();
+      List<Popup> popups = popupRepository.findActivePopupByRandom(today);
 
-        List<PopupResponseDto> responseDtos = popups
-                .stream()
-                .map(Popup -> {
-                    List<PopupImage> allByPopupId = popupImageRepository.findAllByPopupId(Popup.getId());
-                    PopupResponseDto responseDto = modelMapper.map(Popup, PopupResponseDto.class);
-                    responseDto.setImgSavedName(allByPopupId.get(0).getImgSavedName());
-                    return responseDto;
-                })
-                .toList();
-
-
-
-        return responseDtos;
+      return popups.stream()
+              .map(popup -> {
+                PopupResponseDto responseDto = modelMapper.map(popup, PopupResponseDto.class);
+                String imgName = popupImageRepository
+                        .findAllByPopupId(popup.getId())
+                        .getFirst()
+                        .getImgSavedName();
+                responseDto.setImgSavedName(imgName);
+                return responseDto;
+              }).toList();
     }
 
     //팝업 상세조회

@@ -43,19 +43,15 @@ public class DefaultConcertService implements ConcertService {
         return responseDtos;
     }
 
+    // 콘서트 랜덤 조회
     @Override
     public List<ConcertResponseDto> getConcertsByRandom() {
-        List<Concert> concerts = concertRepository.findConcertByRandom();
-        concerts.forEach(concert -> System.out.println(concert.getTitle()));
+      LocalDate today = LocalDate.now();
+      List<Concert> concerts = concertRepository.findActiveConcertByRandom(today);
 
-        List<ConcertResponseDto> responseDtos = concerts
-                .stream()
-                .map(Concert ->{
-                    ConcertResponseDto responseDto = modelMapper.map(Concert, ConcertResponseDto.class);
-                    return responseDto;
-                })
-                .toList();
-
-        return responseDtos;
+      return concerts.stream()
+              .map(concert -> modelMapper.map(concert, ConcertResponseDto.class))
+              .toList();
     }
+
 }

@@ -62,4 +62,7 @@ public interface MusicalRepository extends JpaRepository<Musical, Long> {
     // 랜덤이미지조회
     @Query(value = "SELECT m FROM Musical m ORDER BY RAND() LIMIT 10")
     List<Musical> findMusicalByRandom();
+
+    @Query(value = "SELECT * FROM Musical WHERE end_date >= :today ORDER BY RAND() LIMIT 10", nativeQuery = true)
+    List<Musical> findActiveMusicalByRandom(@Param("today") LocalDate today);
 }
